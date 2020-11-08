@@ -2,25 +2,26 @@ using Microsoft.AspNetCore.Mvc;
 
 using System.Threading.Tasks;
 
+using GameApi.Services;
+
 namespace GameApi.Controllers {
 
     [ApiController]
     [Route("/api/[controller]")]
     public class GamesController : ControllerBase {
         //IAdventuresService _adventuresService;
+        IGameService _gameService;
 
-        public GamesController(/*IAdventuresService adventuresService*/) {
-            //_adventuresService = adventuresService;
+        public GamesController(IGameService gameService) {
+            _gameService = gameService;
         }
 
         [HttpGet]
         [Authorize]
-        //public async Task<IActionResult> GetAll()
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            //var adventures = await _adventuresService.GetAll();
-            //return Ok(adventures);
-            return Ok();
+            var games = await _gameService.GetAll();
+            return Ok(games);
         }
 
         [HttpGet]

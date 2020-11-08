@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using TbspRgpLib.Jwt;
+using TbspRgpLib.Settings;
 
 namespace GameApi
 {
@@ -30,6 +31,10 @@ namespace GameApi
         {
             services.AddControllers();
 
+            services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
+            services.AddSingleton<IDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+                
             services.Configure<JwtSettings>(Configuration.GetSection("JwtSettings"));
             services.AddSingleton<IJwtSettings>(sp =>
                 sp.GetRequiredService<IOptions<JwtSettings>>().Value);
