@@ -14,11 +14,18 @@ namespace GameApi.Controllers {
         }
 
         [HttpGet]
+        [Authorize]
         //public async Task<IActionResult> GetAll()
         public IActionResult GetAll()
         {
             //var adventures = await _adventuresService.GetAll();
             //return Ok(adventures);
+            return Ok();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetByAdventure() {
             return Ok();
         }
     }
