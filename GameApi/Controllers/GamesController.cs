@@ -9,7 +9,6 @@ namespace GameApi.Controllers {
     [ApiController]
     [Route("/api/[controller]")]
     public class GamesController : ControllerBase {
-        //IAdventuresService _adventuresService;
         IGameService _gameService;
 
         public GamesController(IGameService gameService) {
