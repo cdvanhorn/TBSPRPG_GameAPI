@@ -9,9 +9,11 @@ namespace GameApi.Entities {
         public string Id { get; set; }
 
         [BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("adventure_id")]
         public string Adventure_Id { get; set; }
 
         [BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("user_id")]
         public string User_Id { get; set; }
     }
 }

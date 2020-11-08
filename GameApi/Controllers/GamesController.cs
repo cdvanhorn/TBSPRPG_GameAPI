@@ -23,10 +23,10 @@ namespace GameApi.Controllers {
             return Ok(games);
         }
 
-        [HttpGet]
-        [Authorize]
-        public IActionResult GetByAdventure() {
-            return Ok();
-        }
+        // [HttpGet]
+        // [Authorize]
+        // public IActionResult GetByAdventure() {
+        //     return Ok();
+        // }
     }
 }

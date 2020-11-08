@@ -15,6 +15,9 @@ using Microsoft.Extensions.Options;
 using TbspRgpLib.Jwt;
 using TbspRgpLib.Settings;
 
+using GameApi.Repositories;
+using GameApi.Services;
+
 namespace GameApi
 {
     public class Startup
@@ -30,6 +33,8 @@ namespace GameApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<IGameService, GameService>();
+            services.AddScoped<IGameRepository, GameRepository>();
 
             services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
             services.AddSingleton<IDatabaseSettings>(sp =>
