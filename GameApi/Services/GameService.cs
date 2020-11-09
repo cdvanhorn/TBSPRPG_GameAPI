@@ -9,7 +9,7 @@ using GameApi.Repositories;
 namespace GameApi.Services {
     public interface IGameService {
         Task<List<Game>> GetAll();
-        //Task<Adventure> GetByName(string name);
+        Task<Game> GetByUserIdAndAdventureName(string userid, string name);
     }
 
     public class GameService : IGameService {
@@ -23,8 +23,8 @@ namespace GameApi.Services {
             return _gameRespository.GetAllGames();
         }
 
-        // public Task<Adventure> GetByName(string name) {
-        //     return _adventuresRespository.GetAdventureByName(name);
-        // }
+        public Task<Game> GetByUserIdAndAdventureName(string userid, string name) {
+            return _gameRespository.GetGameByUserIdAndAdventureName(userid, name);
+        }
     }
 }

@@ -11,7 +11,7 @@ using TbspRgpLib.Settings;
 namespace GameApi.Repositories {
     public interface IGameRepository {
         Task<List<Game>> GetAllGames();
-        //Task<Game> GetGameByAdventureName(string name);
+        Task<Game> GetGameByUserIdAndAdventureName(string userid, string name);
     }
 
     public class GameRepository : IGameRepository {
@@ -33,8 +33,10 @@ namespace GameApi.Repositories {
             return _games.Find(game => true).ToListAsync();
         }
 
-        // public Task<Game> GetGameByAdventureName(string name) {
-        //     return _adventures.Find(adventure => adventure.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
-        // }
+        public Task<Game> GetGameByUserIdAndAdventureName(string userid, string name) {
+            return _games.Find(game => 
+                userid == game.UserId
+                && name.ToLower() == game.Adventure.Name.ToLower()).FirstOrDefaultAsync();
+        }
     }
 }

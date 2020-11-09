@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
+using System;
 using System.Threading.Tasks;
 
 using GameApi.Services;
@@ -23,10 +24,12 @@ namespace GameApi.Controllers {
             return Ok(games);
         }
 
-        // [HttpGet]
-        // [Authorize]
-        // public IActionResult GetByAdventure() {
-        //     return Ok();
-        // }
+        [HttpGet("{name}")]
+        [Authorize]
+        public async Task<IActionResult> GetByAdventure(string name) {
+            var userId = (string)HttpContext.Items["UserId"];
+            var game = await _gameService.GetByUserIdAndAdventureName(userId, name);
+            return Ok(game);
+        }
     }
 }
