@@ -3,15 +3,6 @@ using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json.Serialization;
 
 namespace GameApi.Entities {
-    public class Adventure {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-
-        [BsonElement("name")]
-        public string Name { get; set; }
-    }
-
     public class Game {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

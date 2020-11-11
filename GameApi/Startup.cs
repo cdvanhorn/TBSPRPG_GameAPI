@@ -35,6 +35,8 @@ namespace GameApi
             services.AddControllers();
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IGameRepository, GameRepository>();
+            services.AddScoped<IAdventureService, AdventureService>();
+            services.AddScoped<IAdventureRepository, AdventureRepository>();
 
             services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
             services.AddSingleton<IDatabaseSettings>(sp =>
