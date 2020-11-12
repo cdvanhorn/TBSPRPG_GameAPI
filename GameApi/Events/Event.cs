@@ -4,18 +4,16 @@ using System.Text.Json;
 
 using EventStore.Client;
 
+using GameApi.Aggregates;
+
 namespace GameApi.Events
 {
-    public abstract class Event {
+    public class Event {
         public const string NEW_GAME_EVENT_TYPE = "new_game";
 
         public Event() {
             EventId = Guid.NewGuid();
             EventStoreUuid = Uuid.FromGuid(EventId);
-        }
-
-        public override string ToString() {
-            return $"{EventId}\n{Type}\n{JsonSerializer.Serialize(Data)}";
         }
 
         public Guid EventId { get; set; }
@@ -24,9 +22,20 @@ namespace GameApi.Events
 
         public string Type { get; set; }
 
-        public object Data { get; set; }
+        public AggregateEnvelope Data { get; set; }
 
-        public abstract void InitEvent(object obj);
+        public void InitNewGameEvent(Aggregate data) {
+            Type = NEW_GAME_EVENT_TYPE;
+            InitEvent(data);
+        }
+
+        private void InitEvent(Aggregate data) {
+            //put the aggregate in an envelope
+            AggregateEnvelope envelope = new AggregateEnvelope();
+            envelope.Aggregate = data;
+            envelope.EventIds.Add(EventId.ToString());
+            Data = envelope;
+        }
 
         public EventData ToEventStoreEvent() {
             return new EventData(
@@ -36,6 +45,12 @@ namespace GameApi.Events
             );
         }
 
-        public abstract string GetAggregateId();
+        public string GetAggregateId() {
+            return Data.Aggregate.Id;
+        }
+
+        public override string ToString() {
+            return $"{EventId}\n{Type}\n{JsonSerializer.Serialize(Data)}";
+        }
     }
 }

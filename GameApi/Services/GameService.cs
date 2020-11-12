@@ -7,21 +7,24 @@ using MongoDB.Bson;
 using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Events;
+using GameApi.Adapters;
 
 namespace GameApi.Services {
     public interface IGameService {
         Task<List<Game>> GetAll();
         Task<Game> GetByUserIdAndAdventureName(string userid, string name);
-        void StartGame(string userId, string adventureName);
+        void StartGame(string userId, Adventure adventure);
     }
 
     public class GameService : IGameService {
         private IGameRepository _gameRespository;
         private IAdventureService _adventureService;
+        private IGameAggregateAdapter _gameAggregateAdapter;
 
-        public GameService(IGameRepository gameRepository, IAdventureService adventureService) {
+        public GameService(IGameRepository gameRepository, IAdventureService adventureService, IGameAggregateAdapter gameAggregateAdapter) {
             _gameRespository = gameRepository;
             _adventureService = adventureService;
+            _gameAggregateAdapter = gameAggregateAdapter;
         }
 
         public Task<List<Game>> GetAll() {
@@ -32,9 +35,8 @@ namespace GameApi.Services {
             return _gameRespository.GetGameByUserIdAndAdventureName(userid, name);
         }
 
-        public async void StartGame(string userId, string adventureName) {
-            Task<Adventure> advTask = _adventureService.GetAdventureByName(adventureName);
-            Game game = await GetByUserIdAndAdventureName(userId, adventureName);
+        public async void StartGame(string userId, Adventure adventure) {
+            Game game = await GetByUserIdAndAdventureName(userId, adventure.Name);
             if(game != null)
                 return;
             
@@ -42,10 +44,12 @@ namespace GameApi.Services {
             game = new Game();
             game.Id = ObjectId.GenerateNewId().ToString();
             game.UserId = userId;
-            game.Adventure = await advTask;
+            game.Adventure = adventure;
 
-            NewGameEvent evnt = new NewGameEvent();
-            evnt.InitEvent(game);
+            //the new game event should us an aggregate object not a game object
+            Event evnt = new Event();
+            evnt.InitNewGameEvent(_gameAggregateAdapter.ToAggregate(game));
+            //evnt.InitEvent(game);
             Console.WriteLine(evnt);
         }
     }
