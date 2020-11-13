@@ -19,12 +19,12 @@ namespace GameApi.Services {
     public class GameService : IGameService {
         private IGameRepository _gameRespository;
         private IAdventureService _adventureService;
-        private IGameAggregateAdapter _gameAggregateAdapter;
+        private IEventAdapter _eventAdapter;
 
-        public GameService(IGameRepository gameRepository, IAdventureService adventureService, IGameAggregateAdapter gameAggregateAdapter) {
+        public GameService(IGameRepository gameRepository, IAdventureService adventureService, IEventAdapter eventAdapter) {
             _gameRespository = gameRepository;
             _adventureService = adventureService;
-            _gameAggregateAdapter = gameAggregateAdapter;
+            _eventAdapter = eventAdapter;
         }
 
         public Task<List<Game>> GetAll() {
@@ -46,7 +46,7 @@ namespace GameApi.Services {
             game.UserId = userId;
             game.Adventure = adventure;
 
-            
+            Event newGameEvent = _eventAdapter.NewGameEvent(game);
         }
     }
 }
