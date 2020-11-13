@@ -17,6 +17,7 @@ using TbspRgpLib.Settings;
 
 using GameApi.Repositories;
 using GameApi.Services;
+using GameApi.Adapters;
 
 namespace GameApi
 {
@@ -37,6 +38,7 @@ namespace GameApi
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IAdventureService, AdventureService>();
             services.AddScoped<IAdventureRepository, AdventureRepository>();
+            services.AddScoped<IEventAdapter, EventAdapter>();
 
             services.Configure<DatabaseSettings>(Configuration.GetSection("Database"));
             services.AddSingleton<IDatabaseSettings>(sp =>

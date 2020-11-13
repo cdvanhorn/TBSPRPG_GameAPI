@@ -4,7 +4,7 @@ using System.Text.Json;
 
 using EventStore.Client;
 
-using GameApi.Aggregates;
+using GameApi.Events.Data;
 
 namespace GameApi.Events
 {
@@ -38,7 +38,14 @@ namespace GameApi.Events
         }
 
         public override string ToString() {
-            return $"{EventId}\n{Type}\n{JsonSerializer.Serialize(Data)}";
+            string jsonData = "";
+            if(Type == NEW_GAME_EVENT_TYPE) {
+                jsonData = JsonSerializer.Serialize((NewGame)Data);
+            } else {
+                jsonData = JsonSerializer.Serialize(Data);
+            }
+
+            return $"{EventId}\n{Type}\n{jsonData}";
         }
     }
 }

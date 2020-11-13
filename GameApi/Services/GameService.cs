@@ -47,6 +47,7 @@ namespace GameApi.Services {
             game.Adventure = adventure;
 
             Event newGameEvent = _eventAdapter.NewGameEvent(game);
+            Console.WriteLine(newGameEvent);
         }
     }
 }

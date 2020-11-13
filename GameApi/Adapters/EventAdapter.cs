@@ -7,7 +7,7 @@ namespace GameApi.Adapters {
         Event NewGameEvent(Game game);
     }
 
-    public class EventAdapter {
+    public class EventAdapter : IEventAdapter{
         public Event NewGameEvent(Game game) {
             NewGame data = new NewGame();
             data.Id = game.Id;
