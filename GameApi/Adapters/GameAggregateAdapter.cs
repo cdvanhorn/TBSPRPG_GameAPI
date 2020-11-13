@@ -8,17 +8,15 @@ namespace GameApi.Adapters {
     }
 
     public class GameAggregateAdapter : IGameAggregateAdapter {
-        private IAdventureAggregateAdapter _adventureAggregateAdapter;
-
-        public GameAggregateAdapter(IAdventureAggregateAdapter adventureAggregateAdapter) {
-            _adventureAggregateAdapter = adventureAggregateAdapter;
+        public GameAggregateAdapter() {
         } 
 
         public GameAggregate ToAggregate(Game game) {
             GameAggregate agg = new GameAggregate();
             agg.Id = game.Id;
             agg.UserId = game.UserId;
-            agg.Adventure = _adventureAggregateAdapter.ToAggregate(game.Adventure);
+            agg.AdventureId = game.Adventure.Id;
+            agg.AdventureName = game.Adventure.Name;
             return agg;
         }
 
@@ -26,7 +24,10 @@ namespace GameApi.Adapters {
             Game game = new Game();
             game.Id = aggregate.Id;
             game.UserId = aggregate.UserId;
-            game.Adventure = _adventureAggregateAdapter.ToEntity(aggregate.Adventure);
+            game.Adventure = new Adventure() {
+                Id = aggregate.AdventureId,
+                Name = aggregate.AdventureName
+            };
             return game;
         }
     }

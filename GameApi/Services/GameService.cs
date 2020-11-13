@@ -46,11 +46,7 @@ namespace GameApi.Services {
             game.UserId = userId;
             game.Adventure = adventure;
 
-            //the new game event should us an aggregate object not a game object
-            Event evnt = new Event();
-            evnt.InitNewGameEvent(_gameAggregateAdapter.ToAggregate(game));
-            //evnt.InitEvent(game);
-            Console.WriteLine(evnt);
+            
         }
     }
 }

@@ -22,31 +22,19 @@ namespace GameApi.Events
 
         public string Type { get; set; }
 
-        public AggregateEnvelope Data { get; set; }
-
-        public void InitNewGameEvent(Aggregate data) {
-            Type = NEW_GAME_EVENT_TYPE;
-            InitEvent(data);
-        }
-
-        private void InitEvent(Aggregate data) {
-            //put the aggregate in an envelope
-            AggregateEnvelope envelope = new AggregateEnvelope();
-            envelope.Aggregate = data;
-            envelope.EventIds.Add(EventId.ToString());
-            Data = envelope;
-        }
+        public EventData Data { get; set; }
 
         public EventData ToEventStoreEvent() {
-            return new EventData(
-                EventStoreUuid,
-                Type, 
-                Encoding.UTF8.GetBytes(JsonSerializer.Serialize(Data))
-            );
+            // return new EventData(
+            //     EventStoreUuid,
+            //     Type, 
+            //     Encoding.UTF8.GetBytes(JsonSerializer.Serialize(Data))
+            // );
+            return null;
         }
 
-        public string GetAggregateId() {
-            return Data.Aggregate.Id;
+        public string GetStreamId() {
+            return Data.Id;
         }
 
         public override string ToString() {
