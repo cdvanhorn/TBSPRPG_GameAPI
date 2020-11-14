@@ -30,7 +30,7 @@ namespace GameApi.Events
             _eventStoreClient = new EventStoreClient(settings);
         }
 
-        public void SendEvent(Event evnt, bool newStream = false) {
+        public void SendEvent(Event evnt, bool newStream) {
             StreamState state;
             if(newStream) {
                 state = StreamState.NoStream;

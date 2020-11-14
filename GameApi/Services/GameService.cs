@@ -19,10 +19,12 @@ namespace GameApi.Services {
     public class GameService : IGameService {
         private IGameRepository _gameRespository;
         private IEventAdapter _eventAdapter;
+        private IEventService _eventService;
 
-        public GameService(IGameRepository gameRepository, IEventAdapter eventAdapter) {
+        public GameService(IGameRepository gameRepository, IEventAdapter eventAdapter, IEventService eventService) {
             _gameRespository = gameRepository;
             _eventAdapter = eventAdapter;
+            _eventService = eventService;
         }
 
         public Task<List<Game>> GetAll() {
@@ -45,7 +47,7 @@ namespace GameApi.Services {
             game.Adventure = adventure;
 
             Event newGameEvent = _eventAdapter.NewGameEvent(game);
-            Console.WriteLine(newGameEvent);
+            _eventService.SendEvent(newGameEvent, true);
         }
     }
 }
