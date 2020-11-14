@@ -1,7 +1,5 @@
-using GameApi.Aggregates;
-
 namespace GameApi.Events {
-    public class EventData {
+    public class EventContent {
         public string Id { get; set; }
     }
 }

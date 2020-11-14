@@ -1,5 +1,5 @@
 using GameApi.Events;
-using GameApi.Events.Data;
+using GameApi.Events.Content;
 using GameApi.Entities;
 
 namespace GameApi.Adapters {

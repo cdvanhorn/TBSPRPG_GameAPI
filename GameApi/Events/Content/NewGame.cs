@@ -1,7 +1,7 @@
 using GameApi.Events;
 
-namespace GameApi.Events.Data {
-    public class NewGame : EventData {
+namespace GameApi.Events.Content {
+    public class NewGame : EventContent {
         public string UserId { get; set; }
 
         public string AdventureName { get; set; }

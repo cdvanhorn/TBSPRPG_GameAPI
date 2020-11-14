@@ -1,9 +1,8 @@
 using System;
 using System.Text;
-
+using System.Text.Json;
 
 using EventStore.Client;
-
 
 using GameApi.Aggregates;
 
@@ -23,18 +22,19 @@ namespace GameApi.Events
 
         public string Type { get; set; }
 
-        public abstract EventData GetData();
+        public abstract EventContent GetData();
 
         public abstract string GetStreamId();
+
         public abstract void UpdateAggregate(Aggregate agg);
 
         public EventData ToEventStoreEvent() {
-            // return new EventData(
-            //     EventStoreUuid,
-            //     Type, 
-            //     Encoding.UTF8.GetBytes(JsonSerializer.Serialize(Data))
-            // );
-            return null;
+            var jsonData = JsonSerializer.Serialize(GetData());
+            return new EventData(
+                EventStoreUuid,
+                Type, 
+                Encoding.UTF8.GetBytes(jsonData)
+            );
         }
     }
 }

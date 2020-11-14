@@ -7,4 +7,17 @@ namespace GameApi.Events
     {
         void SendEvent(Event evnt);
     }
+
+    // var settings = new EventStoreClientSettings {
+    //     ConnectivitySettings = {
+    //         Address = new Uri("http://eventstore:2113")
+    //     }
+    // };
+    // var client = new EventStoreClient(settings);
+    // await client.AppendToStreamAsync(
+    //     "some-stream",
+    //     StreamState.Any,
+    //     new List<EventData> {
+    //         eventData
+    //     });
 }

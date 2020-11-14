@@ -1,7 +1,7 @@
 using System.Text.Json;
 
 using GameApi.Aggregates;
-using GameApi.Events.Data;
+using GameApi.Events.Content;
 
 namespace GameApi.Events {
     public class NewGameEvent : Event {
@@ -16,7 +16,7 @@ namespace GameApi.Events {
             
         }
 
-        public override EventData GetData() {
+        public override EventContent GetData() {
             return Data;
         }
 
