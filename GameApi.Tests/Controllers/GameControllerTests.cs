@@ -47,7 +47,7 @@ namespace GameApi.Tests.Controllers {
             ).ReturnsAsync((string userid, string name) => 
                 games.Find(game => game.UserId == userid && game.Adventure.Name == name)
             );
-            return new GameService(mockGameRepo.Object, new EventAdapter());
+            return new GameService(mockGameRepo.Object, new EventAdapter(), null);
         }
 
         [Fact]
