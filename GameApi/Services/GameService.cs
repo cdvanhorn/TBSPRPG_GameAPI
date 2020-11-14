@@ -18,12 +18,10 @@ namespace GameApi.Services {
 
     public class GameService : IGameService {
         private IGameRepository _gameRespository;
-        private IAdventureService _adventureService;
         private IEventAdapter _eventAdapter;
 
-        public GameService(IGameRepository gameRepository, IAdventureService adventureService, IEventAdapter eventAdapter) {
+        public GameService(IGameRepository gameRepository, IEventAdapter eventAdapter) {
             _gameRespository = gameRepository;
-            _adventureService = adventureService;
             _eventAdapter = eventAdapter;
         }
 
