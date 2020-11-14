@@ -47,6 +47,10 @@ namespace GameApi
             services.Configure<JwtSettings>(Configuration.GetSection("JwtSettings"));
             services.AddSingleton<IJwtSettings>(sp =>
                 sp.GetRequiredService<IOptions<JwtSettings>>().Value);
+            
+            services.Configure<EventStoreSettings>(Configuration.GetSection("EventStore"));
+            services.AddSingleton<IEventStoreSettings>(sp =>
+                sp.GetRequiredService<IOptions<EventStoreSettings>>().Value);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
