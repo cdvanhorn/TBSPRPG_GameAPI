@@ -23,7 +23,7 @@ namespace GameApi.Controllers {
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var games = await _gameService.GetAll();
@@ -31,7 +31,7 @@ namespace GameApi.Controllers {
         }
 
         [Route("start/{name}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Start(string name) {
             //make sure the name is valid before we kick things off and leave
             var adventure = await _adventureService.GetAdventureByName(name);
@@ -44,37 +44,8 @@ namespace GameApi.Controllers {
         }
 
         [HttpGet("{name}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByAdventure(string name) {
-            // var settings = new EventStoreClientSettings {
-            //     ConnectivitySettings = {
-            //         Address = new Uri("http://eventstore:2113")
-            //     }
-            // };
-            // var client = new EventStoreClient(settings);
-            // var eventData = new EventData(
-            //     Uuid.NewUuid(),
-            //     "some-event",
-            //     Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}")
-            // );
-
-            // await client.AppendToStreamAsync(
-            //     "some-stream",
-            //     StreamState.Any,
-            //     new List<EventData> {
-            //         eventData
-            //     });
-
-            // var events = client.ReadStreamAsync(
-            //     Direction.Forwards,
-            //     "some-stream",
-            //     StreamPosition.Start,
-            //     1);
-
-            // await foreach (var @event in events) {
-            //     Console.WriteLine(Encoding.UTF8.GetString(@event.Event.Data.Span));
-            // }
-
             var userId = (string)HttpContext.Items["UserId"];
             var game = await _gameService.GetByUserIdAndAdventureName(userId, name);
             return Ok(game);
