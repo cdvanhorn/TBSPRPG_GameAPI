@@ -7,9 +7,22 @@ using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Adapters;
 
+using GameApi.Events;
+
 namespace GameApi.Tests.Mocks {
     public class GameServiceMock {
         public static GameService MockGameService() {
+            //we need a mock EventService
+            var events = new List<Event>();
+            var mockEventService = new Mock<IEventService>();
+            mockEventService.Setup(service => 
+                service.SendEvent(It.IsAny<Event>(), It.IsAny<bool>())
+            ).Callback<Event, bool>((evnt, n) => events.Add(evnt));
+
+            return MockGameService(mockEventService.Object);
+        }
+
+        public static GameService MockGameService(IEventService eventService) {
             var games = new List<Game>();
             games.Add(new Game {
                 Id = "1",
@@ -25,7 +38,7 @@ namespace GameApi.Tests.Mocks {
             ).ReturnsAsync((string userid, string name) => 
                 games.Find(game => game.UserId == userid && game.Adventure.Name == name)
             );
-            return new GameService(mockGameRepo.Object, new EventAdapter(), null);
+            return new GameService(mockGameRepo.Object, new EventAdapter(), eventService);
         }
     }
 }
