@@ -15,10 +15,8 @@ namespace GameApi.Adapters {
             data.AdventureId = game.Adventure.Id;
             data.AdventureName = game.Adventure.Name;
 
-            Event evnt = new Event();
-            evnt.Type = Event.NEW_GAME_EVENT_TYPE;
-            evnt.Data = data;
-            return evnt;
+            NewGameEvent evt = new NewGameEvent(data);
+            return evt;
         }
     }
 }
