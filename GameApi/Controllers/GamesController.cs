@@ -39,8 +39,6 @@ namespace GameApi.Controllers {
                 return BadRequest(new { message = "invalid adventure name" });
 
             var userId = (string)HttpContext.Items["UserId"];
-            //var userId = "5fa8585243485e01dc847b8c";
-            //var userId = "5fa8585243485e01dc847b8b";
             _gameService.StartGame(userId, adventure);
             return Accepted();
         }

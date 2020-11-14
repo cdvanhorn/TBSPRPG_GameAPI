@@ -56,7 +56,7 @@ namespace GameApi.Tests.Controllers {
             var controller = new GamesController(_gameService, _adventureService);
 
             //act
-            var result = await controller.Start("Demoo");
+            var result = await controller.Start("Demmo");
 
             //assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
