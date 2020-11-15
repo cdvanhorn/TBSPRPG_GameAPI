@@ -17,7 +17,12 @@ namespace GameApi.Processors
 
         protected override void PreTask()
         {
-            _eventService.SubscribeByType("new_game");
+            _eventService.SubscribeByType("new_game",
+                (sub, evnt, token) => {
+                    Console.WriteLine(evnt);
+                    return Task.CompletedTask;
+                }
+            );
         }
     }
 }

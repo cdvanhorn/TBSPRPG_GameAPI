@@ -2,6 +2,7 @@
 //so can change to different event store if necessary
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using EventStore.Client;
@@ -13,7 +14,7 @@ namespace GameApi.Events
     public interface IEventService
     {
         void SendEvent(Event evnt, bool newStream);
-        void SubscribeByType(string typeName);
+        void SubscribeByType(string typeName, Func<StreamSubscription, ResolvedEvent, CancellationToken, Task> eventHandler);
     }
 
     public class EventService : IEventService {
@@ -49,16 +50,9 @@ namespace GameApi.Events
             );
         }
 
-        //Func<StreamSubscription, ResolvedEvent, CancellationToken, Task>
-        public async void SubscribeByType(string typeName) {
+        public async void SubscribeByType(string typeName, Func<StreamSubscription, ResolvedEvent, CancellationToken, Task> eventHandler) {
             var fulltypename = $"$et-{typeName}";
-            await _eventStoreClient.SubscribeToStreamAsync(
-                fulltypename,
-                (sub, evnt, cancelToken) => {
-                    Console.WriteLine(evnt.ToString());
-                    return Task.CompletedTask;
-                }
-            );
+            await _eventStoreClient.SubscribeToStreamAsync(fulltypename, eventHandler);
         }
     }
 }
