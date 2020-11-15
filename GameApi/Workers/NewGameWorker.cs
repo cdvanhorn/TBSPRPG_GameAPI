@@ -15,13 +15,13 @@ namespace GameApi.Workers
         private Task _backgroundTask;
         private IEventService _eventService;
 
+        public NewGameWorker(IEventStoreSettings eventStoreSettings) {
+            _eventService = new EventService(eventStoreSettings); 
+        }
+
         public Task StartAsync(CancellationToken cancellationToken)
         {
             Console.WriteLine("NewGameWorker is starting.");
-            EventStoreSettings settings = new EventStoreSettings();
-            settings.Url = "http://eventstore";
-            settings.Port = "2113";
-            _eventService = new EventService(settings); 
             _eventService.SubscribeByType("new_game");
             _backgroundTask = BackgroundTask();
             return Task.CompletedTask;
