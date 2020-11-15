@@ -24,16 +24,17 @@ namespace GameApi.Events
 
         public abstract EventContent GetData();
 
+        public abstract string GetDataJson();
+
         public abstract string GetStreamId();
 
         public abstract void UpdateAggregate(Aggregate agg);
 
         public EventData ToEventStoreEvent() {
-            var jsonData = JsonSerializer.Serialize(GetData());
             return new EventData(
                 EventStoreUuid,
                 Type, 
-                Encoding.UTF8.GetBytes(jsonData)
+                Encoding.UTF8.GetBytes(GetDataJson())
             );
         }
     }

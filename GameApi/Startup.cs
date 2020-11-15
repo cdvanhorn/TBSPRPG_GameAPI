@@ -19,6 +19,7 @@ using GameApi.Repositories;
 using GameApi.Services;
 using GameApi.Adapters;
 using GameApi.Events;
+using GameApi.Workers;
 
 namespace GameApi
 {
@@ -53,6 +54,9 @@ namespace GameApi
             services.Configure<EventStoreSettings>(Configuration.GetSection("EventStore"));
             services.AddSingleton<IEventStoreSettings>(sp =>
                 sp.GetRequiredService<IOptions<EventStoreSettings>>().Value);
+
+            //start workers
+            services.AddHostedService<NewGameWorker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

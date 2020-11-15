@@ -51,14 +51,13 @@ namespace GameApi.Events
 
         //Func<StreamSubscription, ResolvedEvent, CancellationToken, Task>
         public async void SubscribeByType(string typeName) {
-            await _eventStoreClient.SubscribeToAllAsync(
+            var fulltypename = $"$et-{typeName}";
+            await _eventStoreClient.SubscribeToStreamAsync(
+                fulltypename,
                 (sub, evnt, cancelToken) => {
                     Console.WriteLine(evnt.ToString());
                     return Task.CompletedTask;
-                },
-                filterOptions: new SubscriptionFilterOptions(
-                    EventTypeFilter.Prefix($"{typeName}-")
-                )
+                }
             );
         }
     }

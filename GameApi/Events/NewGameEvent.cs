@@ -20,12 +20,17 @@ namespace GameApi.Events {
             return Data;
         }
 
+        public override string GetDataJson()
+        {
+            return JsonSerializer.Serialize(Data);
+        }
+
         public override string GetStreamId() {
             return Data.Id;
         }
 
         public override string ToString() {
-            return $"{EventId}\n{Type}\n{JsonSerializer.Serialize(Data)}";
+            return $"{EventId}\n{Type}\n{GetDataJson()}";
         }
     }
 }
