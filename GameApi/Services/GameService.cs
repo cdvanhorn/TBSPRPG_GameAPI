@@ -36,6 +36,11 @@ namespace GameApi.Services {
         }
 
         public async void StartGame(string userId, Adventure adventure) {
+            //we assume the adventure is valid
+            //but bail if there isn't a user id
+            if(userId == null)
+                return;
+
             Game game = await GetByUserIdAndAdventureName(userId, adventure.Name);
             if(game != null)
                 return;
