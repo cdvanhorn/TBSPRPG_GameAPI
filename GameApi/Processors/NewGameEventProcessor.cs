@@ -19,11 +19,15 @@ namespace GameApi.Processors
         {
             _eventService.SubscribeByType(
                 Event.NEW_GAME_EVENT_TYPE,
-                (sub, evnt, token) => {
-                    Console.WriteLine(evnt);
-                    return Task.CompletedTask;
+                (evnt) => {
+                    return HandleEvent(evnt);
                 }
             );
+        }
+
+        private Task HandleEvent(Event evnt) {
+            Console.WriteLine("Received Event: " + evnt);
+            return Task.CompletedTask;
         }
     }
 }

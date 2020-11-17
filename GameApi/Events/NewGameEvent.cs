@@ -12,12 +12,22 @@ namespace GameApi.Events {
             Data = data;
         }
 
+        public NewGameEvent() : base() {
+            Type = NEW_GAME_EVENT_TYPE;
+        }
+
         public override void UpdateAggregate(Aggregate agg) {
             
         }
 
-        public override EventContent GetData() {
+        protected override EventContent GetData() {
             return Data;
+        }
+
+        protected override void SetData(string jsonString) {
+            //parse the string as json and set the content
+            NewGame ngame = JsonSerializer.Deserialize<NewGame>(jsonString);
+            Data = ngame;
         }
 
         public override string GetDataJson()

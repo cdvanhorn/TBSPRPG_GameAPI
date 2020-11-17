@@ -14,7 +14,7 @@ namespace GameApi.Events
     public interface IEventService
     {
         void SendEvent(Event evnt, bool newStream);
-        void SubscribeByType(string typeName, Func<StreamSubscription, ResolvedEvent, CancellationToken, Task> eventHandler);
+        void SubscribeByType(string typeName, Func<Event, Task> eventHandler);
     }
 
     public class EventService : IEventService {
@@ -50,9 +50,15 @@ namespace GameApi.Events
             );
         }
 
-        public async void SubscribeByType(string typeName, Func<StreamSubscription, ResolvedEvent, CancellationToken, Task> eventHandler) {
-            var fulltypename = $"$et-{typeName}";
-            await _eventStoreClient.SubscribeToStreamAsync(fulltypename, eventHandler);
+        public async void SubscribeByType(string typeName, Func<Event, Task> eventHandler) {
+            await _eventStoreClient.SubscribeToAllAsync(
+                (subscription, evnt, token) => {
+                    return eventHandler(Event.FromEventStoreEvent(evnt));
+                },
+                filterOptions: new SubscriptionFilterOptions(
+	                EventTypeFilter.Prefix(typeName)
+                )
+            );
         }
     }
 }
