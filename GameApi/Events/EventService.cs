@@ -18,7 +18,6 @@ namespace GameApi.Events
         void SendEvent(Event evnt, bool newStream);
         void SubscribeByType(string typeName, Action<Event> eventHandler);
         Task<List<Event>> GetEventsInStreamAsync(string streamId);
-        Task<Aggregate> CreateAggregate(string aggregateId, string aggregateTypeName);
     }
 
     public class EventService : IEventService {
@@ -56,8 +55,8 @@ namespace GameApi.Events
 
         public async void SubscribeByType(string typeName, Action<Event> eventHandler) {
             await _eventStoreClient.SubscribeToAllAsync(
-                (subscription, evnt, token) => {
-                    eventHandler(Event.FromEventStoreEvent(evnt));
+                (subscription, evntdata, token) => {
+                    eventHandler(Event.FromEventStoreEvent(evntdata));
                     return Task.CompletedTask;
                 },
                 filterOptions: new SubscriptionFilterOptions(
@@ -80,22 +79,6 @@ namespace GameApi.Events
                 events.Add(Event.FromEventStoreEvent(evnt));
             }
             return events;
-        }
-
-        public async Task<Aggregate> CreateAggregate(string aggregateId, string aggregateTypeName) {
-            //create a new aggregate of the appropriate type
-            string fqname = $"GameApi.Aggregates.{aggregateTypeName}";
-            Type aggregateType = Type.GetType(fqname);
-            if(aggregateType == null)
-                throw new ArgumentException($"invalid aggregate type name {aggregateTypeName}");
-            Aggregate aggregate = (Aggregate)Activator.CreateInstance(aggregateType);
-
-            //get all of the events in the aggregrate id stream
-            var events = await GetEventsInStreamAsync(aggregateId);
-            foreach(var evnt in events) {
-                evnt.UpdateAggregate(aggregate);
-            }
-            return aggregate;
         }
     }
 }
