@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 using Moq;
 
@@ -7,6 +8,7 @@ using Xunit;
 
 using GameApi.Services;
 using GameApi.Events;
+using GameApi.Events.Content;
 
 using GameApi.Tests.Mocks;
 
@@ -51,7 +53,8 @@ namespace GameApi.Tests.Services {
             Assert.Single<Event>(Events);
             Event evt = Events[0];
             Assert.Equal("new_game", evt.Type);
-            Assert.Equal(evt.GetData().Id, evt.GetStreamId());
+            var newGame = JsonSerializer.Deserialize<NewGame>(evt.GetDataJson());
+            Assert.Equal(evt.GetStreamId(), newGame.Id);
         }
     }
 }
