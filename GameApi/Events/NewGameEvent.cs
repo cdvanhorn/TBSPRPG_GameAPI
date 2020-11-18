@@ -17,7 +17,11 @@ namespace GameApi.Events {
         }
 
         public override void UpdateAggregate(Aggregate agg) {
-            
+            GameAggregate aggregate = (GameAggregate)agg;
+            aggregate.Id = Data.Id;
+            aggregate.UserId = Data.UserId;
+            aggregate.AdventureId = Data.UserId;
+            aggregate.AdventureName = Data.AdventureName;
         }
 
         protected override EventContent GetData() {
