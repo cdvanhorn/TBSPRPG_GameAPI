@@ -8,8 +8,6 @@ namespace GameApi.Adapters {
     }
 
     public class GameAggregateAdapter : IGameAggregateAdapter {
-        public GameAggregateAdapter() {
-        } 
 
         public GameAggregate ToAggregate(Game game) {
             GameAggregate agg = new GameAggregate();

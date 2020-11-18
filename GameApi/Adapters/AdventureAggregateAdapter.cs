@@ -8,6 +8,7 @@ namespace GameApi.Adapters {
     }
 
     public class AdventureAggregateAdapter : IAdventureAggregateAdapter {
+        
         public AdventureAggregate ToAggregate(Adventure adventure) {
             AdventureAggregate agg = new AdventureAggregate();
             agg.Id = adventure.Id;
