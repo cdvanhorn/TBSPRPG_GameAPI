@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 using GameApi.Events;
 using GameApi.Aggregates;
+using GameApi.Adapters;
+using GameApi.Entities;
+using GameApi.Repositories;
+using GameApi.Services;
 
 using TbspRgpLib.Settings;
 
@@ -12,10 +16,14 @@ namespace GameApi.Processors
     {
         private IEventService _eventService;
         private IAggregateService _aggregateService;
+        private IGameAggregateAdapter _gameAdapter;
+        private IGameRepository _gameRepository;
 
-        public NewGameEventProcessor(IEventStoreSettings eventStoreSettings) {
+        public NewGameEventProcessor(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings) {
             _eventService = new EventService(eventStoreSettings);
             _aggregateService = new AggregateService(_eventService);
+            _gameAdapter = new GameAggregateAdapter();
+            _gameRepository = new GameRepository(databaseSettings);
         }
 
         protected override void PreTask()
@@ -35,12 +43,16 @@ namespace GameApi.Processors
             //otherwise would check the aggregate list of event ids
             //if the event id is already there we processed it and can
             //skip this event
-            //At this point we can process the event
-            //for this event since it's a new object we can see if the id
-            //is already there if so we can skip this event
-            //otherwise we write the game to the database
             GameAggregate gameAggregate = (GameAggregate)aggregate;
-            Console.WriteLine("Received Aggregate: " + gameAggregate.UserId);
+            //we need to convert the aggregate to a game object and insert in to the database
+            //but we don't want to insert duplicates
+            Game game = _gameAdapter.ToEntity(gameAggregate);
+            
+            //if the game is missing fields ignore it
+            if(game.UserId == null || game.Adventure == null)
+                return;
+            Console.WriteLine($"Writing Game {game.Id}!");
+            _gameRepository.InsertGameIfDoesntExist(game);
             return;
         }
     }

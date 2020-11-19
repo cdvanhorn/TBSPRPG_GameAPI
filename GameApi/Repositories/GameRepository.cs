@@ -12,6 +12,7 @@ namespace GameApi.Repositories {
     public interface IGameRepository {
         Task<List<Game>> GetAllGames();
         Task<Game> GetGameByUserIdAndAdventureName(string userid, string name);
+        void InsertGameIfDoesntExist(Game game);
     }
 
     public class GameRepository : IGameRepository {
@@ -37,6 +38,22 @@ namespace GameApi.Repositories {
             return _games.Find(game => 
                 userid == game.UserId
                 && name.ToLower() == game.Adventure.Name.ToLower()).FirstOrDefaultAsync();
+        }
+
+        public void InsertGameIfDoesntExist(Game game) {
+            var options = new ReplaceOptions { IsUpsert = true };
+            try {
+                var result = _games.ReplaceOneAsync<Game>(
+                    doc => 
+                        doc.UserId == game.UserId 
+                        && doc.Adventure.Id == game.Adventure.Id,
+                    game, options);
+            } catch (MongoDB.Driver.MongoWriteException) {
+                //the insert may fail if the game is already there
+                //this would happen events show up multiple times
+                Console.WriteLine("Insert Failed " + game.Id);
+            }
+
         }
     }
 }

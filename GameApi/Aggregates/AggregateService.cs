@@ -20,12 +20,11 @@ namespace GameApi.Aggregates {
             _eventService.SubscribeByType(
                 typeName,
                 async (evnt) => {
-                    Console.WriteLine("Building Aggregate from Event" + evnt.EventId);
                     //check if the aggregate id is ok, produce an aggregate
                     var aggregateId = evnt.GetStreamId();
                     if(aggregateId == null) //we can't parse this event
                         return;
-                    Console.WriteLine("Building aggregate " + aggregateId);
+
                     //need to get aggregate type name in a programitc way
                     eventHandler(await BuildAggregate(aggregateId, "GameAggregate"));
                 }
@@ -39,14 +38,12 @@ namespace GameApi.Aggregates {
             if(aggregateType == null)
                 throw new ArgumentException($"invalid aggregate type name {aggregateTypeName}");
             Aggregate aggregate = (Aggregate)Activator.CreateInstance(aggregateType);
-            Console.WriteLine("Constructed Aggregate Object");
 
             //get all of the events in the aggregrate id stream
             var events = await _eventService.GetEventsInStreamAsync(aggregateId);
             foreach(var evnt in events) {
                 evnt.UpdateAggregate(aggregate);
             }
-            Console.WriteLine("Aggregate Built");
             return aggregate;
         }
     }
