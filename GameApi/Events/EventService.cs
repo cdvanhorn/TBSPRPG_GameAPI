@@ -71,10 +71,12 @@ namespace GameApi.Events
                 streamId,
                 StreamPosition.Start);
             
-            if(await results.ReadState == ReadState.StreamNotFound) {
-                throw new ArgumentException($"invalid stream id {streamId}");
-            }
             List<Event> events = new List<Event>();
+            if(await results.ReadState == ReadState.StreamNotFound) {
+                //throw new ArgumentException($"invalid stream id {streamId}");
+                return events;
+            }
+            
             await foreach(var evnt in results) {
                 events.Add(Event.FromEventStoreEvent(evnt));
             }

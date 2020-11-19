@@ -39,7 +39,8 @@ namespace GameApi.Processors
             //for this event since it's a new object we can see if the id
             //is already there if so we can skip this event
             //otherwise we write the game to the database
-            Console.WriteLine("Received Aggregate: " + aggregate);
+            GameAggregate gameAggregate = (GameAggregate)aggregate;
+            Console.WriteLine("Received Aggregate: " + gameAggregate.UserId);
             return;
         }
     }
