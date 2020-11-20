@@ -20,7 +20,7 @@ namespace GameApi.Events {
             GameAggregate aggregate = (GameAggregate)agg;
             aggregate.Id = Data.Id;
             aggregate.UserId = Data.UserId;
-            aggregate.AdventureId = Data.UserId;
+            aggregate.AdventureId = Data.AdventureId;
             aggregate.AdventureName = Data.AdventureName;
         }
 

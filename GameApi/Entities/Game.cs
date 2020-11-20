@@ -1,9 +1,14 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Text.Json.Serialization;
+
+using System.Collections.Generic;
 
 namespace GameApi.Entities {
     public class Game {
+        public Game() {
+            Events = new List<string>();
+        }
+        
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
@@ -14,5 +19,8 @@ namespace GameApi.Entities {
 
         [BsonElement("adventure")]
         public Adventure Adventure { get; set; }
+
+        [BsonElement("events")]
+        public List<string> Events { get; set; }
     }
 }

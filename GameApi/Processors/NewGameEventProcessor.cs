@@ -30,13 +30,13 @@ namespace GameApi.Processors
         {
             _aggregateService.SubscribeByType(
                 Event.NEW_GAME_EVENT_TYPE,
-                (aggregate) => {
-                    HandleEvent(aggregate);
+                (aggregate, eventId) => {
+                    HandleEvent(aggregate, eventId);
                 }
             );
         }
 
-        private void HandleEvent(Aggregate aggregate) {
+        private void HandleEvent(Aggregate aggregate, string eventId) {
             //generate related aggregate from it's stream
             //this db loading processor so check if this event
             //id is in the data base
@@ -49,10 +49,11 @@ namespace GameApi.Processors
             Game game = _gameAdapter.ToEntity(gameAggregate);
             
             //if the game is missing fields ignore it
-            if(game.UserId == null || game.Adventure == null)
+            if(game.UserId == null || game.Adventure == null || game.UserId == game.Adventure.Id)
                 return;
-            Console.WriteLine($"Writing Game {game.Id}!");
-            _gameRepository.InsertGameIfDoesntExist(game);
+            Console.WriteLine($"Writing Game {game.Id}!!");
+            game.Events.Add(eventId);
+            _gameRepository.InsertGameIfDoesntExist(game, eventId);
             return;
         }
     }
