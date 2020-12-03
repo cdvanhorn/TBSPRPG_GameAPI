@@ -39,12 +39,12 @@ namespace GameApi.Services {
             //we assume the adventure is valid
             //but bail if there isn't a user id
 
-            // if(userId == null)
-            //     return;
+            if(userId == null)
+                return;
 
             Game game = await GetByUserIdAndAdventureName(userId, adventure.Name);
-            // if(game != null)
-            //     return;
+            if(game != null)
+                return;
             
             //there isn't an existing game, we'll start a new one
             game = new Game();
