@@ -23,9 +23,9 @@ namespace GameApi.Repositories {
         public ServiceRepository(IDatabaseSettings databaseSettings) {
             _dbSettings = databaseSettings;
 
-            var connectionString = $"mongodb+srv://{_dbSettings.Username}:{_dbSettings.Password}@{_dbSettings.Url}/{_dbSettings.Name}?retryWrites=true&w=majority";
+            var connectionString = $"mongodb+srv://{_dbSettings.Username}:{_dbSettings.Password}@{_dbSettings.SystemDatabaseUrl}/{_dbSettings.SystemDatabaseName}?retryWrites=true&w=majority";
             var client = new MongoClient(connectionString);
-            var database = client.GetDatabase(_dbSettings.Name);
+            var database = client.GetDatabase(_dbSettings.SystemDatabaseName);
 
             _services = database.GetCollection<Service>("services");
         }
