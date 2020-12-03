@@ -6,7 +6,7 @@ using GameApi.Events;
 namespace GameApi.Aggregates {
     public interface IAggregateService {
         Task<Aggregate> BuildAggregate(string aggregateId, string aggregateTypeName);
-        void SubscribeByType(string typeName, Action<Aggregate, string> eventHandler);
+        void SubscribeByType(string typeName, Action<Aggregate, string> eventHandler, ulong subscriptionStart = 0);
     }
 
     public class AggregateService : IAggregateService {
@@ -16,7 +16,7 @@ namespace GameApi.Aggregates {
             _eventService = eventService;
         }
 
-        public void SubscribeByType(string typeName, Action<Aggregate, string> eventHandler) {
+        public void SubscribeByType(string typeName, Action<Aggregate, string> eventHandler, ulong subscriptionStart = 0) {
             _eventService.SubscribeByType(
                 typeName,
                 async (evnt) => {
@@ -27,7 +27,8 @@ namespace GameApi.Aggregates {
 
                     //need to get aggregate type name in a programitc way
                     eventHandler(await BuildAggregate(aggregateId, "GameAggregate"), evnt.EventId.ToString());
-                }
+                },
+                subscriptionStart
             );
         }
 

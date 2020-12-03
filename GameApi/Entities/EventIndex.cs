@@ -7,6 +7,6 @@ namespace GameApi.Entities {
         public string EventName { get; set; }
 
         [BsonElement("index")]
-        public string Index { get; set;}
+        public ulong Index { get; set;}
     }
 }

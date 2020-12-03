@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using GameApi.Events;
@@ -18,21 +19,31 @@ namespace GameApi.Processors
         private IAggregateService _aggregateService;
         private IGameAggregateAdapter _gameAdapter;
         private IGameRepository _gameRepository;
+        private IServiceRespository _serviceRepository;
 
         public NewGameEventProcessor(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings) {
             _eventService = new EventService(eventStoreSettings);
             _aggregateService = new AggregateService(_eventService);
             _gameAdapter = new GameAggregateAdapter();
             _gameRepository = new GameRepository(databaseSettings);
+            _serviceRepository = new ServiceRepository(databaseSettings);
         }
 
-        protected override void PreTask()
+        protected override async void PreTask()
         {
+            //get where we need to start reading from
+            Service service = await _serviceRepository.GetServiceByName("game");
+            EventIndex ei = service.EventIndexes.Where(ei => ei.EventName == Event.NEW_GAME_EVENT_TYPE).FirstOrDefault();
+            ulong startPosition = 0;
+            if(ei != null && ei.Index > 0)
+                startPosition = ei.Index;
+
             _aggregateService.SubscribeByType(
                 Event.NEW_GAME_EVENT_TYPE,
                 (aggregate, eventId) => {
                     HandleEvent(aggregate, eventId);
-                }
+                },
+                startPosition
             );
         }
 

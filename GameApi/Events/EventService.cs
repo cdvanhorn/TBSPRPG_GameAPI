@@ -16,7 +16,7 @@ namespace GameApi.Events
     public interface IEventService
     {
         void SendEvent(Event evnt, bool newStream);
-        void SubscribeByType(string typeName, Action<Event> eventHandler);
+        void SubscribeByType(string typeName, Action<Event> eventHandler, ulong subscriptionStart);
         Task<List<Event>> GetEventsInStreamAsync(string streamId);
     }
 
@@ -53,8 +53,9 @@ namespace GameApi.Events
             );
         }
 
-        public async void SubscribeByType(string typeName, Action<Event> eventHandler) {
+        public async void SubscribeByType(string typeName, Action<Event> eventHandler, ulong subscriptionStart) {
             await _eventStoreClient.SubscribeToAllAsync(
+                new Position(subscriptionStart, subscriptionStart),
                 (subscription, evntdata, token) => {
                     eventHandler(Event.FromEventStoreEvent(evntdata));
                     return Task.CompletedTask;
