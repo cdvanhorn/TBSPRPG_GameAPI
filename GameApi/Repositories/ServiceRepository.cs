@@ -2,7 +2,7 @@ using GameApi.Entities;
 
 using MongoDB.Driver;
 
-using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,6 +13,8 @@ namespace GameApi.Repositories {
         Task<List<Service>> GetAllServices();
 
         Task<Service> GetServiceByName(string name);
+
+        void UpdateService(Service service, string eventName);
     }
 
     public class ServiceRepository : IServiceRespository {
@@ -37,6 +39,16 @@ namespace GameApi.Repositories {
         public Task<Service> GetServiceByName(string name) {
             return _services.Find(service => 
                 name.ToLower() == service.Name.ToLower()).FirstOrDefaultAsync();
+        }
+
+        public void UpdateService(Service service, string eventName) {
+            var filter = Builders<Service>.Filter.Eq(doc => doc.Id, service.Id)
+                & Builders<Service>.Filter.ElemMatch(doc => doc.EventIndexes, 
+                    Builders<EventIndex>.Filter.Eq(ei => ei.EventName, eventName));
+            var update = Builders<Service>.Update.Set(doc => doc.EventIndexes[-1].Index,
+                service.EventIndexes.Where(ei => ei.EventName == eventName).First().Index
+            );
+            var result = _services.UpdateOneAsync(filter, update);
         }
     }
 }

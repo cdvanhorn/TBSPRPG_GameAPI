@@ -20,6 +20,8 @@ namespace GameApi.Processors
         private IGameAggregateAdapter _gameAdapter;
         private IGameRepository _gameRepository;
         private IServiceRespository _serviceRepository;
+        private Task<Service> _serviceTask;
+        private Service _service;
 
         public NewGameEventProcessor(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings) {
             _eventService = new EventService(eventStoreSettings);
@@ -27,13 +29,14 @@ namespace GameApi.Processors
             _gameAdapter = new GameAggregateAdapter();
             _gameRepository = new GameRepository(databaseSettings);
             _serviceRepository = new ServiceRepository(databaseSettings);
+            _serviceTask = _serviceRepository.GetServiceByName("game");
         }
 
         protected override async void PreTask()
         {
             //get where we need to start reading from
-            Service service = await _serviceRepository.GetServiceByName("game");
-            EventIndex ei = service.EventIndexes.Where(ei => ei.EventName == Event.NEW_GAME_EVENT_TYPE).FirstOrDefault();
+            _service = await _serviceTask;
+            EventIndex ei = _service.EventIndexes.Where(ei => ei.EventName == Event.NEW_GAME_EVENT_TYPE).FirstOrDefault();
             ulong startPosition = 0;
             if(ei != null && ei.Index > 0)
                 startPosition = ei.Index;
@@ -69,6 +72,9 @@ namespace GameApi.Processors
 
             //update the event index, if this fails it's not a big deal
             //we'll end up reading duplicates
+            var eventIndex = _service.EventIndexes.Where(ei => ei.EventName == Event.NEW_GAME_EVENT_TYPE).First();
+            eventIndex.Index = position;
+            _serviceRepository.UpdateService(_service, Event.NEW_GAME_EVENT_TYPE);
             return;
         }
     }
