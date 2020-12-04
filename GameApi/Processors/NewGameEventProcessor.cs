@@ -37,17 +37,18 @@ namespace GameApi.Processors
             ulong startPosition = 0;
             if(ei != null && ei.Index > 0)
                 startPosition = ei.Index;
+            Console.WriteLine($"Start position: {startPosition}");
 
             _aggregateService.SubscribeByType(
                 Event.NEW_GAME_EVENT_TYPE,
-                (aggregate, eventId) => {
-                    HandleEvent(aggregate, eventId);
+                (aggregate, eventId, position) => {
+                    HandleEvent(aggregate, eventId, position);
                 },
                 startPosition
             );
         }
 
-        private void HandleEvent(Aggregate aggregate, string eventId) {
+        private void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
             //generate related aggregate from it's stream
             //this db loading processor so check if this event
             //id is in the data base
@@ -62,9 +63,12 @@ namespace GameApi.Processors
             //if the game is missing fields ignore it
             if(game.UserId == null || game.Adventure == null || game.UserId == game.Adventure.Id)
                 return;
-            Console.WriteLine($"Writing Game {game.Id}!!");
+            Console.WriteLine($"Writing Game {game.Id} {position}!!");
             game.Events.Add(eventId);
             _gameRepository.InsertGameIfDoesntExist(game, eventId);
+
+            //update the event index, if this fails it's not a big deal
+            //we'll end up reading duplicates
             return;
         }
     }

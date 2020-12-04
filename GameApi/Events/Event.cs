@@ -20,6 +20,8 @@ namespace GameApi.Events
 
         public Uuid EventStoreUuid { get; set; }
 
+        public ulong Position { get; set; }
+
         public string Type { get; set; }
 
         protected abstract EventContent GetData();
@@ -51,6 +53,7 @@ namespace GameApi.Events
             evnt.SetData(jsonData);
             evnt.EventStoreUuid = resolvedEvent.Event.EventId;
             evnt.EventId = evnt.EventStoreUuid.ToGuid();
+            evnt.Position = resolvedEvent.Event.Position.PreparePosition;
             return evnt;
         }
 
