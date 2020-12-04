@@ -41,19 +41,22 @@ namespace GameApi.Repositories {
         }
 
         public void InsertGameIfDoesntExist(Game game, string eventId) {
+            //do I care about the mongo write exception, on duplciate
+            //events the exception will be thrown.
             var options = new ReplaceOptions { IsUpsert = true };
-            try {
-                var result = _games.ReplaceOneAsync<Game>(
-                    doc => 
-                        doc.UserId == game.UserId 
-                        && doc.Adventure.Id == game.Adventure.Id
-                        && !doc.Events.Contains(eventId),
-                    game, options);
-            } catch (MongoDB.Driver.MongoWriteException) {
-                //the insert may fail if the game is already there
-                //this would happen events show up multiple times
-                Console.WriteLine("Insert Failed  " + game.Id);
-            }
+            var result = _games.ReplaceOneAsync<Game>(
+                doc => 
+                    doc.UserId == game.UserId 
+                    && doc.Adventure.Id == game.Adventure.Id
+                    && !doc.Events.Contains(eventId),
+                game, options);
+            // try {
+                
+            // } catch (MongoDB.Driver.MongoWriteException) {
+            //     //the insert may fail if the game is already there
+            //     //this would happen events show up multiple times
+            //     Console.WriteLine("Insert Failed  " + game.Id);
+            // }
 
         }
     }
