@@ -1,5 +1,5 @@
-using GameApi.Events;
-using GameApi.Events.Content;
+using TbspRpgLib.Events;
+using TbspRpgLib.Events.Content;
 using GameApi.Entities;
 
 namespace GameApi.Adapters {

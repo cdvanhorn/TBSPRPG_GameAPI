@@ -1,5 +1,5 @@
 using GameApi.Entities;
-using GameApi.Aggregates;
+using TbspRpgLib.Aggregates;
 
 namespace GameApi.Adapters {
     public interface IAdventureAggregateAdapter {

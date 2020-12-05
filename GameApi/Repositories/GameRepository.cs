@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using TbspRgpLib.Settings;
+using TbspRpgLib.Settings;
 
 namespace GameApi.Repositories {
     public interface IGameRepository {

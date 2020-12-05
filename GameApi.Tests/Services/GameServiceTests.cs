@@ -7,8 +7,8 @@ using Moq;
 using Xunit;
 
 using GameApi.Services;
-using GameApi.Events;
-using GameApi.Events.Content;
+using TbspRpgLib.Events;
+using TbspRpgLib.Events.Content;
 
 using GameApi.Tests.Mocks;
 

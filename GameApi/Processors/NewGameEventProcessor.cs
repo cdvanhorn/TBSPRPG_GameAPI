@@ -2,14 +2,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using GameApi.Events;
-using GameApi.Aggregates;
+
 using GameApi.Adapters;
 using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Services;
 
-using TbspRgpLib.Settings;
+using TbspRpgLib.Repositories;
+using TbspRpgLib.Entities;
+using TbspRpgLib.Events;
+using TbspRpgLib.Aggregates;
+using TbspRpgLib.Settings;
 
 namespace GameApi.Processors
 {

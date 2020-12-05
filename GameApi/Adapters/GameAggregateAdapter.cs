@@ -1,4 +1,4 @@
-using GameApi.Aggregates;
+using TbspRpgLib.Aggregates;
 using GameApi.Entities;
 
 namespace GameApi.Adapters {

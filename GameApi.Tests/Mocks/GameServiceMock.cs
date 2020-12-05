@@ -7,7 +7,7 @@ using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Adapters;
 
-using GameApi.Events;
+using TbspRpgLib.Events;
 
 namespace GameApi.Tests.Mocks {
     public class GameServiceMock {

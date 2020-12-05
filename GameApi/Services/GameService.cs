@@ -6,8 +6,9 @@ using MongoDB.Bson;
 
 using GameApi.Entities;
 using GameApi.Repositories;
-using GameApi.Events;
 using GameApi.Adapters;
+
+using TbspRpgLib.Events;
 
 namespace GameApi.Services {
     public interface IGameService {
