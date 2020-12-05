@@ -76,8 +76,10 @@ namespace GameApi.Processors
             //update the event index, if this fails it's not a big deal
             //we'll end up reading duplicates
             var eventIndex = _service.EventIndexes.Where(ei => ei.EventName == Event.NEW_GAME_EVENT_TYPE).First();
-            eventIndex.Index = position;
-            _serviceRepository.UpdateService(_service, Event.NEW_GAME_EVENT_TYPE);
+            if(eventIndex.Index < position) {
+                eventIndex.Index = position;
+                _serviceRepository.UpdateService(_service, Event.NEW_GAME_EVENT_TYPE);
+            }
             return;
         }
     }
