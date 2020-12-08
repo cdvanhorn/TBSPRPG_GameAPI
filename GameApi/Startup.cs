@@ -18,7 +18,7 @@ using TbspRpgLib.Settings;
 using GameApi.Repositories;
 using GameApi.Services;
 using GameApi.Adapters;
-using GameApi.Processors;
+using GameApi.EventProcessors;
 
 using TbspRpgLib.Events;
 
@@ -57,7 +57,7 @@ namespace GameApi
                 sp.GetRequiredService<IOptions<EventStoreSettings>>().Value);
 
             //start workers
-            services.AddHostedService<NewGameEventProcessor>();
+            services.AddHostedService<MyNewGameEventProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
