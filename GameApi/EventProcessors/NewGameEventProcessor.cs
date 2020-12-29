@@ -16,7 +16,7 @@ namespace GameApi.EventProcessors
         private IGameRepository _gameRepository;
 
         public MyNewGameEventProcessor(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings) :
-            base(eventStoreSettings, databaseSettings){
+            base("game", eventStoreSettings, databaseSettings){
             _gameAdapter = new GameAggregateAdapter();
             _gameRepository = new GameRepository(databaseSettings);
         }

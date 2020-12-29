@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TbspRpgLib.Settings;
+using TbspRpgLib.Repositories;
 
 namespace GameApi.Repositories {
     public interface IGameRepository {
@@ -15,19 +16,11 @@ namespace GameApi.Repositories {
         void InsertGameIfDoesntExist(Game game, string eventId);
     }
 
-    public class GameRepository : IGameRepository {
-        private readonly IDatabaseSettings _dbSettings;
-
+    public class GameRepository : MongoRepository, IGameRepository {
         private readonly IMongoCollection<Game> _games;
 
-        public GameRepository(IDatabaseSettings databaseSettings) {
-            _dbSettings = databaseSettings;
-
-            var connectionString = $"mongodb+srv://{_dbSettings.Username}:{_dbSettings.Password}@{_dbSettings.Url}/{_dbSettings.Name}?retryWrites=true&w=majority";
-            var client = new MongoClient(connectionString);
-            var database = client.GetDatabase(_dbSettings.Name);
-
-            _games = database.GetCollection<Game>("games");
+        public GameRepository(IDatabaseSettings databaseSettings) : base(databaseSettings){
+            _games = _mongoDatabase.GetCollection<Game>("games");
         }
 
         public Task<List<Game>> GetAllGames() {

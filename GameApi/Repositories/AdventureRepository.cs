@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TbspRpgLib.Settings;
+using TbspRpgLib.Repositories;
 
 namespace GameApi.Repositories {
     public interface IAdventureRepository {
@@ -14,19 +15,11 @@ namespace GameApi.Repositories {
         Task<Adventure> GetAdventureByName(string name);
     }
 
-    public class AdventureRepository : IAdventureRepository {
-        private readonly IDatabaseSettings _dbSettings;
-
+    public class AdventureRepository : MongoRepository, IAdventureRepository {
         private readonly IMongoCollection<Adventure> _adventures;
 
-        public AdventureRepository(IDatabaseSettings databaseSettings) {
-            _dbSettings = databaseSettings;
-
-            var connectionString = $"mongodb+srv://{_dbSettings.Username}:{_dbSettings.Password}@{_dbSettings.Url}/{_dbSettings.Name}?retryWrites=true&w=majority";
-            var client = new MongoClient(connectionString);
-            var database = client.GetDatabase(_dbSettings.Name);
-
-            _adventures = database.GetCollection<Adventure>("adventures");
+        public AdventureRepository(IDatabaseSettings databaseSettings) : base(databaseSettings){
+            _adventures = _mongoDatabase.GetCollection<Adventure>("adventures");
         }
 
         public Task<List<Adventure>> GetAllAdventures() {
