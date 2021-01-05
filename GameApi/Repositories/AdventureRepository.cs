@@ -1,10 +1,11 @@
 using GameApi.Entities;
 
-using MongoDB.Driver;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+
+using Microsoft.EntityFrameworkCore;
 
 using TbspRpgLib.Settings;
 using TbspRpgLib.Repositories;
@@ -15,19 +16,20 @@ namespace GameApi.Repositories {
         Task<Adventure> GetAdventureByName(string name);
     }
 
-    public class AdventureRepository : MongoRepository, IAdventureRepository {
-        private readonly IMongoCollection<Adventure> _adventures;
+    public class AdventureRepository : IAdventureRepository {
 
-        public AdventureRepository(IDatabaseSettings databaseSettings) : base(databaseSettings){
-            _adventures = _mongoDatabase.GetCollection<Adventure>("adventures");
+        public AdventureRepository() {
+
         }
 
         public Task<List<Adventure>> GetAllAdventures() {
-            return _adventures.Find(adv => true).ToListAsync();
+            //return _adventures.Find(adv => true).ToListAsync();
+            return null;
         }
 
         public Task<Adventure> GetAdventureByName(string name) {
-            return _adventures.Find(adv => adv.Name.ToLower() == name).FirstOrDefaultAsync();
+            //return _adventures.Find(adv => adv.Name.ToLower() == name).FirstOrDefaultAsync();
+            return null;
         }
     }
 }

@@ -11,19 +11,19 @@ namespace GameApi.Adapters {
 
         public GameAggregate ToAggregate(Game game) {
             GameAggregate agg = new GameAggregate();
-            agg.Id = game.Id;
-            agg.UserId = game.UserId;
-            agg.AdventureId = game.Adventure.Id;
+            agg.Id = game.Guid;
+            agg.UserId = game.UserId.ToString();
+            agg.AdventureId = game.AdventureId.ToString();
             agg.AdventureName = game.Adventure.Name;
             return agg;
         }
 
         public Game ToEntity(GameAggregate aggregate) {
             Game game = new Game();
-            game.Id = aggregate.Id;
-            game.UserId = aggregate.UserId;
+            game.Id = int.Parse(aggregate.Id);
+            game.UserId = int.Parse(aggregate.UserId);
             game.Adventure = new Adventure() {
-                Id = aggregate.AdventureId,
+                Id = int.Parse(aggregate.AdventureId),
                 Name = aggregate.AdventureName
             };
             return game;

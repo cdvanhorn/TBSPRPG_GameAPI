@@ -11,14 +11,14 @@ namespace GameApi.Adapters {
         
         public AdventureAggregate ToAggregate(Adventure adventure) {
             AdventureAggregate agg = new AdventureAggregate();
-            agg.Id = adventure.Id;
+            agg.Id = adventure.Id.ToString();
             agg.Name = adventure.Name;
             return agg;
         }
 
         public Adventure ToEntity(AdventureAggregate aggregate) {
             Adventure adv = new Adventure();
-            adv.Id = aggregate.Id;
+            adv.Id = int.Parse(aggregate.Id);
             adv.Name = aggregate.Name;
             return adv;
         }
