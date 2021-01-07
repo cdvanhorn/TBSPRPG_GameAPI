@@ -7,51 +7,42 @@ using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 
-using TbspRpgLib.Settings;
-using TbspRpgLib.Repositories;
-
 namespace GameApi.Repositories {
     public interface IGameRepository {
+        Task<Game> GetGameById(Guid gameId);
         Task<List<Game>> GetAllGames();
-        Task<Game> GetGameByUserIdAndAdventureName(string userid, string name);
-        void InsertGameIfDoesntExist(Game game, string eventId);
+        Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name);
+        void InsertGameIfDoesntExist(Game game);
     }
 
     public class GameRepository : IGameRepository {
+        private GameContext _context;
 
-        public GameRepository() {
-
+        public GameRepository(GameContext context) {
+            _context = context;
         }
 
         public Task<List<Game>> GetAllGames() {
-            //return _games.Find(game => true).ToListAsync();
-            return null;
+            return _context.Games.AsQueryable().ToListAsync();
         }
 
-        public Task<Game> GetGameByUserIdAndAdventureName(string userid, string name) {
-            //return _games.Find(game => 
-            //    userid == game.UserId
-            //    && name.ToLower() == game.Adventure.Name.ToLower()).FirstOrDefaultAsync();
-            return null;
+        public Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name) {
+            return _context.Games.AsQueryable().Include(g => g.Adventure)
+                    .Where(g => g.UserId == userid)
+                    .Where(g => g.Adventure.Name.ToLower() == name.ToLower())
+                    .FirstOrDefaultAsync();
         }
 
-        public void InsertGameIfDoesntExist(Game game, string eventId) {
-            //do I care about the mongo write exception, on duplciate
-            //events the exception will be thrown.
-            // var options = new ReplaceOptions { IsUpsert = true };
-            // var result = _games.ReplaceOneAsync<Game>(
-            //     doc => 
-            //         doc.UserId == game.UserId 
-            //         && doc.Adventure.Id == game.Adventure.Id
-            //         && !doc.Events.Contains(eventId),
-            //     game, options);
-            // try {
-                
-            // } catch (MongoDB.Driver.MongoWriteException) {
-            //     //the insert may fail if the game is already there
-            //     //this would happen events show up multiple times
-            //     Console.WriteLine("Insert Failed  " + game.Id);
-            // }
+        public Task<Game> GetGameById(Guid gameId) {
+            return _context.Games.AsQueryable().Where(g => g.Id == gameId).FirstOrDefaultAsync();
+        }
+
+        public async void InsertGameIfDoesntExist(Game game) {
+            var dbGame = await GetGameById(game.Id);
+            if(dbGame == null) {
+                _context.Games.Add(game);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

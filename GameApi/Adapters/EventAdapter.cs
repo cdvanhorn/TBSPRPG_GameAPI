@@ -10,7 +10,7 @@ namespace GameApi.Adapters {
     public class EventAdapter : IEventAdapter{
         public Event NewGameEvent(Game game) {
             NewGame data = new NewGame();
-            data.Id = game.Guid;
+            data.Id = game.Id.ToString();
             data.UserId = game.UserId.ToString();
             data.AdventureId = game.Adventure.Id.ToString();
             data.AdventureName = game.Adventure.Name;

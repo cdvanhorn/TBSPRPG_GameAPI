@@ -7,9 +7,6 @@ using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 
-using TbspRpgLib.Settings;
-using TbspRpgLib.Repositories;
-
 namespace GameApi.Repositories {
     public interface IAdventureRepository {
         Task<List<Adventure>> GetAllAdventures();
@@ -17,19 +14,20 @@ namespace GameApi.Repositories {
     }
 
     public class AdventureRepository : IAdventureRepository {
+        private GameContext _context;
 
-        public AdventureRepository() {
-
+        public AdventureRepository(GameContext context) {
+            _context = context;
         }
 
         public Task<List<Adventure>> GetAllAdventures() {
-            //return _adventures.Find(adv => true).ToListAsync();
-            return null;
+            return _context.Adventures.AsQueryable().ToListAsync();
         }
 
         public Task<Adventure> GetAdventureByName(string name) {
-            //return _adventures.Find(adv => adv.Name.ToLower() == name).FirstOrDefaultAsync();
-            return null;
+            return _context.Adventures.AsQueryable()
+                    .Where(adv => adv.Name.ToLower() == name.ToLower())
+                    .FirstOrDefaultAsync();
         }
     }
 }

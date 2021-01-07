@@ -8,6 +8,8 @@ using TbspRpgLib.EventProcessors;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Settings;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace GameApi.EventProcessors
 {
     public class MyNewGameEventProcessor : NewGameEventProcessor
@@ -18,7 +20,13 @@ namespace GameApi.EventProcessors
         public MyNewGameEventProcessor(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings) :
             base("game", eventStoreSettings, databaseSettings){
             _gameAdapter = new GameAggregateAdapter();
-            _gameRepository = new GameRepository(databaseSettings);
+
+            //need to create a db context
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            var optionsBuilder = new DbContextOptionsBuilder<GameContext>();
+            optionsBuilder.UseNpgsql(connectionString);
+            var context = new GameContext(optionsBuilder.Options);
+            _gameRepository = new GameRepository(context);
         }
 
         protected override void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
@@ -37,8 +45,11 @@ namespace GameApi.EventProcessors
             if(game.UserId == null || game.Adventure == null || game.UserId == game.Adventure.Id)
                 return;
             Console.WriteLine($"Writing Game {game.Id} {position}!!");
-            game.Events.Add(eventId);
-            _gameRepository.InsertGameIfDoesntExist(game, eventId);
+            Guid eventguid;
+            if(!Guid.TryParse(eventId, out eventguid))
+                return;
+            game.Events.Add(new GameEvent() { Id = eventguid });
+            _gameRepository.InsertGameIfDoesntExist(game);
 
             //update the event index, if this fails it's not a big deal
             //we'll end up reading duplicates

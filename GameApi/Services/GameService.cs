@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using MongoDB.Bson;
-
 using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Adapters;
@@ -33,14 +31,17 @@ namespace GameApi.Services {
         }
 
         public Task<Game> GetByUserIdAndAdventureName(string userid, string name) {
-            return _gameRespository.GetGameByUserIdAndAdventureName(userid, name);
+            Guid guid;
+            if(!Guid.TryParse(userid, out guid))
+                return null;
+            return _gameRespository.GetGameByUserIdAndAdventureName(guid, name);
         }
 
         public async void StartGame(string userId, Adventure adventure) {
             //we assume the adventure is valid
             //but bail if there isn't a user id
-
-            if(userId == null)
+            Guid uguid;
+            if(userId == null || !Guid.TryParse(userId, out uguid))
                 return;
 
             Game game = await GetByUserIdAndAdventureName(userId, adventure.Name);
@@ -49,8 +50,8 @@ namespace GameApi.Services {
             
             //there isn't an existing game, we'll start a new one
             game = new Game();
-            game.Id = ObjectId.GenerateNewId().ToString();
-            game.UserId = userId;
+            game.Id = new Guid();
+            game.UserId = uguid;
             game.Adventure = adventure;
 
             Event newGameEvent = _eventAdapter.NewGameEvent(game);

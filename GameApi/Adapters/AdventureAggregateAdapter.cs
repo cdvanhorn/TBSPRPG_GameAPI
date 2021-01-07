@@ -1,6 +1,8 @@
 using GameApi.Entities;
 using TbspRpgLib.Aggregates;
 
+using System;
+
 namespace GameApi.Adapters {
     public interface IAdventureAggregateAdapter {
         AdventureAggregate ToAggregate(Adventure adventure);
@@ -18,7 +20,7 @@ namespace GameApi.Adapters {
 
         public Adventure ToEntity(AdventureAggregate aggregate) {
             Adventure adv = new Adventure();
-            adv.Id = int.Parse(aggregate.Id);
+            adv.Id = Guid.Parse(aggregate.Id);
             adv.Name = aggregate.Name;
             return adv;
         }

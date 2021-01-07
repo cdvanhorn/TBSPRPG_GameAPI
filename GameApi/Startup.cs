@@ -11,9 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
-using TbspRpgLib.Jwt;
-using TbspRpgLib.Settings;
+using Microsoft.EntityFrameworkCore;
 
 using GameApi.Repositories;
 using GameApi.Services;
@@ -37,6 +35,13 @@ namespace GameApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+            services.AddDbContext<GameContext>(
+                options => options.UseNpgsql(connectionString)
+            );
+
             TbspRpgLib.LibStartup.ConfigureTbspRpgServices(Configuration, services);
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<IGameRepository, GameRepository>();
