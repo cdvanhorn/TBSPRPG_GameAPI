@@ -35,7 +35,7 @@ namespace GameApi.Tests.Services {
             var adventure = await _adventureService.GetAdventureByName("Demo");
             
             //act
-            _gameService.StartGame("1", adventure);
+            _gameService.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3f", adventure);
 
             //assert
             Assert.Empty(Events);
@@ -47,7 +47,7 @@ namespace GameApi.Tests.Services {
             var adventure = await _adventureService.GetAdventureByName("Demo");
 
             //act
-            _gameService.StartGame("2", adventure);
+            _gameService.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f", adventure);
 
             //assert
             Assert.Single<Event>(Events);
