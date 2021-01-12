@@ -50,7 +50,7 @@ namespace GameApi.Services {
             
             //there isn't an existing game, we'll start a new one
             game = new Game();
-            game.Id = new Guid();
+            game.Id = Guid.NewGuid();
             game.UserId = uguid;
             game.Adventure = adventure;
 
