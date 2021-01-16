@@ -15,11 +15,11 @@ namespace GameApi.Controllers {
     [Route("/api/[controller]")]
     public class GamesController : ControllerBase {
         IGameService _gameService;
-        IAdventureService _adventureService;
+        IGameLogic _gameLogic;
 
-        public GamesController(IGameService gameService, IAdventureService adventureService) {
+        public GamesController(IGameService gameService, IGameLogic gameLogic) {
             _gameService = gameService;
-            _adventureService = adventureService;
+            _gameLogic = gameLogic;
         }
 
         [HttpGet]
@@ -33,13 +33,10 @@ namespace GameApi.Controllers {
         [Route("start/{name}")]
         [Authorize]
         public async Task<IActionResult> Start(string name) {
-            //make sure the name is valid before we kick things off and leave
-            var adventure = await _adventureService.GetAdventureByName(name);
-            if(adventure == null)
-                return BadRequest(new { message = "invalid adventure name" });
-
             var userId = (string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY];
-            _gameService.StartGame(userId, adventure);
+            var success = await _gameLogic.StartGame(userId, name);
+            if(!success)
+                return BadRequest(new { message = "couldn't start game" });
             return Accepted();
         }
 

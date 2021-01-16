@@ -12,6 +12,7 @@ namespace GameApi.Repositories {
         Task<Game> GetGameById(Guid gameId);
         Task<List<Game>> GetAllGames();
         Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name);
+        Task<Game> GetGameByUserIdAndAdventureId(Guid userid, Guid adventureId);
         Task<int> InsertGameIfDoesntExist(Game game);
         void AddGame(Game game);
     }
@@ -31,6 +32,13 @@ namespace GameApi.Repositories {
             return _context.Games.AsQueryable().Include(g => g.Adventure)
                     .Where(g => g.UserId == userid)
                     .Where(g => g.Adventure.Name.ToLower() == name.ToLower())
+                    .FirstOrDefaultAsync();
+        }
+
+        public Task<Game> GetGameByUserIdAndAdventureId(Guid userid, Guid adventureId) {
+            return _context.Games.AsQueryable().Include(g => g.Adventure)
+                    .Where(g => g.UserId == userid)
+                    .Where(g => g.AdventureId == adventureId)
                     .FirstOrDefaultAsync();
         }
 

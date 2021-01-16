@@ -34,10 +34,7 @@ namespace GameApi.EventProcessors
             //create the game service
             GameRepository gameRepository = new GameRepository(_context);
             EventService eventService = new EventService(eventStoreSettings);
-            GameService gameService = new GameService(gameRepository,
-                new EventAdapter(),
-                eventService
-            );
+            GameService gameService = new GameService(gameRepository);
 
             //create the adventure service
             AdventureRepository adventureRepository = new AdventureRepository(_context);
