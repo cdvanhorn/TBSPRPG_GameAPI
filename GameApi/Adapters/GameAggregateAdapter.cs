@@ -1,5 +1,6 @@
 using TbspRpgLib.Aggregates;
 using GameApi.Entities;
+using GameApi.Repositories;
 
 using System;
 
@@ -24,10 +25,8 @@ namespace GameApi.Adapters {
             Game game = new Game();
             game.Id = Guid.Parse(aggregate.Id);
             game.UserId = Guid.Parse(aggregate.UserId);
-            game.Adventure = new Adventure() {
-                Id = Guid.Parse(aggregate.AdventureId),
-                Name = aggregate.AdventureName
-            };
+            game.AdventureId = Guid.Parse(aggregate.AdventureId);
+            game.Adventure = null;
             return game;
         }
     }

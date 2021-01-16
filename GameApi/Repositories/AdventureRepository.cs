@@ -11,6 +11,7 @@ namespace GameApi.Repositories {
     public interface IAdventureRepository {
         Task<List<Adventure>> GetAllAdventures();
         Task<Adventure> GetAdventureByName(string name);
+        Task<Adventure> GetAdventureById(Guid advId);
     }
 
     public class AdventureRepository : IAdventureRepository {
@@ -28,6 +29,10 @@ namespace GameApi.Repositories {
             return _context.Adventures.AsQueryable()
                     .Where(adv => adv.Name.ToLower() == name.ToLower())
                     .FirstOrDefaultAsync();
+        }
+
+        public Task<Adventure> GetAdventureById(Guid advId) {
+            return _context.Adventures.AsQueryable().Where(adv => adv.Id == advId).FirstOrDefaultAsync();
         }
     }
 }

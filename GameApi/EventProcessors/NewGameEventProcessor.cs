@@ -3,10 +3,13 @@ using System;
 using GameApi.Adapters;
 using GameApi.Entities;
 using GameApi.Repositories;
+using GameApi.Services;
 
 using TbspRpgLib.EventProcessors;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Settings;
+using TbspRpgLib.Events;
+using TbspRpgLib.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +18,8 @@ namespace GameApi.EventProcessors
     public class MyNewGameEventProcessor : NewGameEventProcessor
     {
         private IGameAggregateAdapter _gameAdapter;
-        private IGameRepository _gameRepository;
+        private IGameLogic _gameLogic;
+        private GameContext _context;
 
         public MyNewGameEventProcessor(IEventStoreSettings eventStoreSettings) :
             base("game", eventStoreSettings){
@@ -25,14 +29,32 @@ namespace GameApi.EventProcessors
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
             var optionsBuilder = new DbContextOptionsBuilder<GameContext>();
             optionsBuilder.UseNpgsql(connectionString);
-            var context = new GameContext(optionsBuilder.Options);
-            _gameRepository = new GameRepository(context);
+            _context = new GameContext(optionsBuilder.Options);
 
+            //create the game service
+            GameRepository gameRepository = new GameRepository(_context);
+            EventService eventService = new EventService(eventStoreSettings);
+            GameService gameService = new GameService(gameRepository,
+                new EventAdapter(),
+                eventService
+            );
+
+            //create the adventure service
+            AdventureRepository adventureRepository = new AdventureRepository(_context);
+            AdventureService adventureService = new AdventureService(adventureRepository);
+
+            _gameLogic = new GameLogic(
+                new EventAdapter(),
+                eventService,
+                gameService,
+                adventureService
+            );
+            
             //initialize the services
-            this.InitializeServices(context);
+            this.InitializeServices(_context);
         }
 
-        protected override void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
+        protected override async void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
             //generate related aggregate from it's stream
             //this db loading processor so check if this event
             //id is in the data base
@@ -45,18 +67,23 @@ namespace GameApi.EventProcessors
             Game game = _gameAdapter.ToEntity(gameAggregate);
             
             //if the game is missing fields ignore it
-            if(game.UserId == null || game.Adventure == null || game.UserId == game.Adventure.Id)
+            if(game.UserId == null || game.AdventureId == null)
                 return;
             Console.WriteLine($"Writing Game {game.Id} {position}!!");
+
+            //make sure the event id is a valid guid
             Guid eventguid;
             if(!Guid.TryParse(eventId, out eventguid))
                 return;
-            _gameRepository.InsertGameIfDoesntExist(game);
 
-            //update the event index, if this fails it's not a big deal
-            //we'll end up reading duplicates
-            UpdateEventTracking(eventId, position);
-            return;
+            //update the game
+            await _gameLogic.AddGame(game);
+            //update the event type position
+            await UpdatePosition(position);
+            //update the processed events
+            await AddEventTracked(eventId);
+            //save the changes
+            _context.SaveChanges();
         }
     }
 }

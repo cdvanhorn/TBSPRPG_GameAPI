@@ -13,6 +13,8 @@ namespace GameApi.Services {
         Task<List<Game>> GetAll();
         Task<Game> GetByUserIdAndAdventureName(string userid, string name);
         void StartGame(string userId, Adventure adventure);
+        Task<Game> GetGameById(Guid gameId);
+        void AddGame(Game game);
     }
 
     public class GameService : IGameService {
@@ -35,6 +37,14 @@ namespace GameApi.Services {
             if(!Guid.TryParse(userid, out guid))
                 return null;
             return _gameRespository.GetGameByUserIdAndAdventureName(guid, name);
+        }
+
+        public Task<Game> GetGameById(Guid gameId) {
+            return _gameRespository.GetGameById(gameId);
+        }
+
+        public void AddGame(Game game) {
+            _gameRespository.AddGame(game);
         }
 
         public async void StartGame(string userId, Adventure adventure) {
