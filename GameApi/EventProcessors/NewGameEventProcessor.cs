@@ -17,8 +17,8 @@ namespace GameApi.EventProcessors
         private IGameAggregateAdapter _gameAdapter;
         private IGameRepository _gameRepository;
 
-        public MyNewGameEventProcessor(IEventStoreSettings eventStoreSettings, IDatabaseSettings databaseSettings) :
-            base("game", eventStoreSettings, databaseSettings){
+        public MyNewGameEventProcessor(IEventStoreSettings eventStoreSettings) :
+            base("game", eventStoreSettings){
             _gameAdapter = new GameAggregateAdapter();
 
             //need to create a db context
@@ -27,6 +27,9 @@ namespace GameApi.EventProcessors
             optionsBuilder.UseNpgsql(connectionString);
             var context = new GameContext(optionsBuilder.Options);
             _gameRepository = new GameRepository(context);
+
+            //initialize the services
+            this.InitializeServices(context);
         }
 
         protected override void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
@@ -48,12 +51,11 @@ namespace GameApi.EventProcessors
             Guid eventguid;
             if(!Guid.TryParse(eventId, out eventguid))
                 return;
-            game.Events.Add(new GameEvent() { Id = eventguid });
             _gameRepository.InsertGameIfDoesntExist(game);
 
             //update the event index, if this fails it's not a big deal
             //we'll end up reading duplicates
-            UpdatePosition(position);
+            UpdateEventTracking(eventId, position);
             return;
         }
     }
