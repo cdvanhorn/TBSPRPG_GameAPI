@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Adapters;
+using GameApi.ViewModels;
 
 using TbspRpgLib.Events;
 
 namespace GameApi.Services {
     public interface IGameService {
         Task<List<Game>> GetAll();
-        Task<Game> GetByUserIdAndAdventureName(string userid, string name);
+        Task<GameViewModel> GetByUserIdAndAdventureName(string userid, string name);
         Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId);
         Task<Game> GetGameById(Guid gameId);
         void AddGame(Game game);
@@ -28,11 +29,14 @@ namespace GameApi.Services {
             return _gameRespository.GetAllGames();
         }
 
-        public Task<Game> GetByUserIdAndAdventureName(string userid, string name) {
+        public async Task<GameViewModel> GetByUserIdAndAdventureName(string userid, string name) {
             Guid guid;
             if(!Guid.TryParse(userid, out guid))
                 return null;
-            return _gameRespository.GetGameByUserIdAndAdventureName(guid, name);
+            var game = await _gameRespository.GetGameByUserIdAndAdventureName(guid, name);
+            if(game == null)
+                return null;
+            return new GameViewModel(game);
         }
 
         public Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId) {
