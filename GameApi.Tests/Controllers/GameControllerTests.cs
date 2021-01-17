@@ -24,16 +24,16 @@ namespace GameApi.Tests.Controllers {
             _adventureService = AdventureServiceMock.MockAdventureService();
         }
 
-        [Fact]
-        public async void Start_InvalidAdventureName_Return400() {
-            //arrange
-            var controller = new GamesController(_gameService, _adventureService);
+        // [Fact]
+        // public async void Start_InvalidAdventureName_Return400() {
+        //     //arrange
+        //     var controller = new GamesController(_gameService, _adventureService);
 
-            //act
-            var result = await controller.Start("Demmo");
+        //     //act
+        //     var result = await controller.Start("Demmo");
 
-            //assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        }
+        //     //assert
+        //     var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        // }
     }
 }

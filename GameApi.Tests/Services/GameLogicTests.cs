@@ -7,35 +7,51 @@ using Moq;
 using Xunit;
 
 using GameApi.Services;
+using GameApi.Adapters;
 using TbspRpgLib.Events;
 using TbspRpgLib.Events.Content;
 
 using GameApi.Tests.Mocks;
 
 namespace GameApi.Tests.Services {
-    public class GameServiceTests {
-        private GameService _gameService;
-        private AdventureService _adventureService;
+    public class GameLogicTests {
         private List<Event> Events;
+        private IGameLogic _gameLogic;
+        AdventureService _adventureService;
 
-        public GameServiceTests() {
+        public GameLogicTests() {
             Events = new List<Event>();
             var mockEventService = new Mock<IEventService>();
             mockEventService.Setup(service => 
                 service.SendEvent(It.IsAny<Event>(), It.IsAny<bool>())
             ).Callback<Event, bool>((evnt, n) => Events.Add(evnt));
 
-            _gameService = GameServiceMock.MockGameService(mockEventService.Object);
+            GameService gameService = GameServiceMock.MockGameService();
             _adventureService = AdventureServiceMock.MockAdventureService();
+            _gameLogic = new GameLogic(
+                new EventAdapter(),
+                mockEventService.Object,
+                gameService,
+                _adventureService);
         }
 
         [Fact]
         public async void StartGame_GameExists_NoEventGenerated() {
             //arrange
-            var adventure = await _adventureService.GetAdventureByName("Demo");
             
             //act
-            _gameService.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3f", adventure);
+            await _gameLogic.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3f", "Demo");
+
+            //assert
+            Assert.Empty(Events);
+        }
+
+        [Fact]
+        public async void StartGame_InvalidAdventure_NoEventGenerated() {
+            //arrange
+            
+            //act
+            await _gameLogic.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f", "Demmo");
 
             //assert
             Assert.Empty(Events);
@@ -43,11 +59,8 @@ namespace GameApi.Tests.Services {
 
         [Fact]
         public async void StartGame_GameDoesntExist_EventGenerated() {
-            //arrange
-            var adventure = await _adventureService.GetAdventureByName("Demo");
-
             //act
-            _gameService.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f", adventure);
+            await _gameLogic.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f", "Demo");
 
             //assert
             Assert.Single<Event>(Events);
