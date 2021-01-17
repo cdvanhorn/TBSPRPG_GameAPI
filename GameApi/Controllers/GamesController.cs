@@ -47,5 +47,12 @@ namespace GameApi.Controllers {
             var game = await _gameService.GetByUserIdAndAdventureName(userId, name);
             return Ok(game);
         }
+
+        [Route("reset")]
+        [Authorize]
+        public async Task<IActionResult> Reset() {
+            await _gameService.ClearData();
+            return Accepted();
+        }
     }
 }

@@ -7,20 +7,24 @@ using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 
+using TbspRpgLib.Repositories;
+
 namespace GameApi.Repositories {
-    public interface IGameRepository {
+    public interface IGameRepository : IServiceTrackingRepository {
         Task<Game> GetGameById(Guid gameId);
         Task<List<Game>> GetAllGames();
         Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name);
         Task<Game> GetGameByUserIdAndAdventureId(Guid userid, Guid adventureId);
         Task<int> InsertGameIfDoesntExist(Game game);
         void AddGame(Game game);
+        Task RemoveAllGames();
+        void SaveChanges();
     }
 
-    public class GameRepository : IGameRepository {
-        private GameContext _context;
+    public class GameRepository : ServiceTrackingRepository, IGameRepository {
+        private readonly GameContext _context;
 
-        public GameRepository(GameContext context) {
+        public GameRepository(GameContext context) : base(context){
             _context = context;
         }
 
@@ -59,6 +63,16 @@ namespace GameApi.Repositories {
         public void AddGame(Game game) {
             //we assume there is nothing needed to be done to the game
             _context.Games.Add(game);
+        }
+
+        public async Task RemoveAllGames() {
+            //clear out the games
+            var games = await GetAllGames();
+            _context.Games.RemoveRange(games);
+        }
+
+        public void SaveChanges() {
+            _context.SaveChanges();
         }
     }
 }

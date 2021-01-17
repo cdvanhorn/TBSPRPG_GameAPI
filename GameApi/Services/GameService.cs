@@ -4,24 +4,24 @@ using System.Threading.Tasks;
 
 using GameApi.Entities;
 using GameApi.Repositories;
-using GameApi.Adapters;
 using GameApi.ViewModels;
 
-using TbspRpgLib.Events;
+using TbspRpgLib.Services;
 
 namespace GameApi.Services {
-    public interface IGameService {
+    public interface IGameService : IServiceTrackingService{
         Task<List<Game>> GetAll();
         Task<GameViewModel> GetByUserIdAndAdventureName(string userid, string name);
         Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId);
         Task<Game> GetGameById(Guid gameId);
         void AddGame(Game game);
+        Task ClearData();
     }
 
-    public class GameService : IGameService {
+    public class GameService : ServiceTrackingService, IGameService {
         private IGameRepository _gameRespository;
 
-        public GameService(IGameRepository gameRepository) {
+        public GameService(IGameRepository gameRepository) : base(gameRepository){
             _gameRespository = gameRepository;
         }
 
@@ -49,6 +49,13 @@ namespace GameApi.Services {
 
         public void AddGame(Game game) {
             _gameRespository.AddGame(game);
+        }
+
+        public async Task ClearData() {
+            await _gameRespository.RemoveAllGames();
+            await _gameRespository.RemoveAllProcessedEvents();
+            await _gameRespository.RemoveAllEventTypePositions();
+            _gameRespository.SaveChanges();
         }
     }
 }
