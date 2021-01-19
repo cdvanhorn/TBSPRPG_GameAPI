@@ -48,8 +48,8 @@ namespace GameApi.EventProcessors
                 var gameLogic = scope.ServiceProvider.GetRequiredService<IGameLogic>();
                 var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
 
-                //check if we've already processed the events
-                if(await gameService.HasBeenProcessed(_service.Id, eventguid))
+                //check if we've already processed the event
+                if(await gameService.HasBeenProcessed(eventguid))
                     return;
 
                 Console.WriteLine($"Writing Game {game.Id} {position}!!");
@@ -57,10 +57,10 @@ namespace GameApi.EventProcessors
                 //update the game
                 await gameLogic.AddGame(game);
                 //update the event type position and this event is processed
-                await gameService.UpdatePosition(_service.Id, _eventType.Id, position);
-                await gameService.EventProcessed(_service.Id, eventguid);
+                await gameService.UpdatePosition(_eventType.Id, position);
+                await gameService.EventProcessed(eventguid);
                 //save the changes
-                Console.WriteLine(context.SaveChanges());
+                context.SaveChanges();
             }
         }
     }
