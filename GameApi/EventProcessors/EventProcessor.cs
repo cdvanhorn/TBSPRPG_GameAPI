@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 using GameApi.Adapters;
 using GameApi.Entities;
@@ -11,18 +12,27 @@ using TbspRpgLib.Settings;
 using TbspRpgLib.Events;
 using TbspRpgLib.Entities;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameApi.EventProcessors
 {
-    public class MyNewGameEventProcessor : NewGameEventProcessor
+    public class EventProcessor : MultiEventProcessor
     {
         private IGameAggregateAdapter _gameAdapter;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public MyNewGameEventProcessor(IEventStoreSettings eventStoreSettings, IServiceScopeFactory scopeFactory) :
-            base("game", eventStoreSettings){
+        public EventProcessor(
+            IEventStoreSettings eventStoreSettings,
+            IServiceScopeFactory scopeFactory) :
+                base(
+                    "game",
+                    new string[] {
+                        Event.NEW_GAME_EVENT_TYPE,
+                        Event.ENTER_LOCATION_EVENT_TYPE
+                    },
+                    eventStoreSettings
+                )
+        {
             _gameAdapter = new GameAggregateAdapter();
             _scopeFactory = scopeFactory;
             var scope = scopeFactory.CreateScope();
@@ -30,17 +40,13 @@ namespace GameApi.EventProcessors
             InitializeStartPosition(context);
         }
 
-        protected override async void HandleEvent(Aggregate aggregate, string eventId, ulong position) {
+        protected override async Task HandleEvent(Aggregate aggregate, Event evnt) {
             GameAggregate gameAggregate = (GameAggregate)aggregate;
             Game game = _gameAdapter.ToEntity(gameAggregate);
+            EventType eventType = GetEventTypeByName(evnt.Type);
             
             //if the game is missing fields ignore it
             if(game.UserId == null || game.AdventureId == null)
-                return;
-
-            //make sure the event id is a valid guid
-            Guid eventguid;
-            if(!Guid.TryParse(eventId, out eventguid))
                 return;
 
             using(var scope = _scopeFactory.CreateScope()) {
@@ -49,16 +55,16 @@ namespace GameApi.EventProcessors
                 var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
 
                 //check if we've already processed the event
-                if(await gameService.HasBeenProcessed(eventguid))
+                if(await gameService.HasBeenProcessed(evnt.EventId))
                     return;
 
-                Console.WriteLine($"Writing Game {game.Id} {position}!!");
+                Console.WriteLine($"Writing Game {game.Id} {gameAggregate.GlobalPosition}!!");
 
                 //update the game
                 await gameLogic.AddGame(game);
                 //update the event type position and this event is processed
-                await gameService.UpdatePosition(_eventType.Id, position);
-                await gameService.EventProcessed(eventguid);
+                await gameService.UpdatePosition(eventType.Id, gameAggregate.GlobalPosition);
+                await gameService.EventProcessed(evnt.EventId);
                 //save the changes
                 context.SaveChanges();
             }

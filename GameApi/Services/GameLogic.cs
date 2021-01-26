@@ -77,7 +77,7 @@ namespace GameApi.Services {
             game.Adventure = adventure;
 
             Event newGameEvent = _eventAdapter.NewGameEvent(game);
-            _eventService.SendEvent(newGameEvent, true);
+            await _eventService.SendEvent(newGameEvent, true);
             return true;
         }
     }
