@@ -53,20 +53,27 @@ namespace GameApi.EventProcessors
                 var context = scope.ServiceProvider.GetRequiredService<GameContext>();
                 var gameLogic = scope.ServiceProvider.GetRequiredService<IGameLogic>();
                 var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
+                
+                var transaction = context.Database.BeginTransaction();
+                try {
+                    //check if we've already processed the event
+                    if(await gameService.HasBeenProcessed(evnt.EventId))
+                        return;
 
-                //check if we've already processed the event
-                if(await gameService.HasBeenProcessed(evnt.EventId))
-                    return;
+                    Console.WriteLine($"Writing Game {game.Id} {gameAggregate.GlobalPosition}!!");
 
-                Console.WriteLine($"Writing Game {game.Id} {gameAggregate.GlobalPosition}!!");
-
-                //update the game
-                await gameLogic.AddGame(game);
-                //update the event type position and this event is processed
-                await gameService.UpdatePosition(eventType.Id, gameAggregate.GlobalPosition);
-                await gameService.EventProcessed(evnt.EventId);
-                //save the changes
-                context.SaveChanges();
+                    //update the game
+                    await gameLogic.AddGame(game);
+                    //update the event type position and this event is processed
+                    await gameService.UpdatePosition(eventType.Id, gameAggregate.GlobalPosition);
+                    await gameService.EventProcessed(evnt.EventId);
+                    //save the changes
+                    context.SaveChanges();
+                    transaction.Commit();
+                } catch (Exception) {
+                    transaction.Rollback();
+                    throw new Exception("event processor error");
+                }
             }
         }
     }
