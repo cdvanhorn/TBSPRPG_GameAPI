@@ -49,6 +49,7 @@ namespace GameApi
             services.AddScoped<IAdventureRepository, AdventureRepository>();
             services.AddScoped<IEventAdapter, EventAdapter>();
             services.AddScoped<IGameLogic, GameLogic>();
+            services.AddScoped<INewGameEventHandler, NewGameEventHandler>();
 
             //start workers
             services.AddHostedService<EventProcessor>();

@@ -18,7 +18,6 @@ namespace GameApi.EventProcessors
 {
     public class EventProcessor : MultiEventProcessor
     {
-        private IGameAggregateAdapter _gameAdapter;
         private readonly IServiceScopeFactory _scopeFactory;
 
         public EventProcessor(
@@ -33,7 +32,6 @@ namespace GameApi.EventProcessors
                     eventStoreSettings
                 )
         {
-            _gameAdapter = new GameAggregateAdapter();
             _scopeFactory = scopeFactory;
             var scope = scopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<GameContext>();
@@ -42,12 +40,7 @@ namespace GameApi.EventProcessors
 
         protected override async Task HandleEvent(Aggregate aggregate, Event evnt) {
             GameAggregate gameAggregate = (GameAggregate)aggregate;
-            Game game = _gameAdapter.ToEntity(gameAggregate);
             EventType eventType = GetEventTypeByName(evnt.Type);
-            
-            //if the game is missing fields ignore it
-            if(game.UserId == null || game.AdventureId == null)
-                return;
 
             using(var scope = _scopeFactory.CreateScope()) {
                 var context = scope.ServiceProvider.GetRequiredService<GameContext>();
@@ -60,10 +53,14 @@ namespace GameApi.EventProcessors
                     if(await gameService.HasBeenProcessed(evnt.EventId))
                         return;
 
-                    Console.WriteLine($"Writing Game {game.Id} {gameAggregate.GlobalPosition}!!");
+                    //figure out what handler to call based on event type
+                    IEventHandler handler = null;
+                    if(eventType.TypeName == Event.NEW_GAME_EVENT_TYPE) {
+                        handler = scope.ServiceProvider.GetRequiredService<INewGameEventHandler>();
+                    }
+                    if(handler != null)
+                        await handler.HandleEvent(gameAggregate, evnt);
 
-                    //update the game
-                    await gameLogic.AddGame(game);
                     //update the event type position and this event is processed
                     await gameService.UpdatePosition(eventType.Id, gameAggregate.GlobalPosition);
                     await gameService.EventProcessed(evnt.EventId);
