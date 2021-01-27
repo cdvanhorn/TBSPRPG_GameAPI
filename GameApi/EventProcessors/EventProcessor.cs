@@ -57,6 +57,8 @@ namespace GameApi.EventProcessors
                     IEventHandler handler = null;
                     if(eventType.TypeName == Event.NEW_GAME_EVENT_TYPE) {
                         handler = scope.ServiceProvider.GetRequiredService<INewGameEventHandler>();
+                    } else if(eventType.TypeName == Event.ENTER_LOCATION_EVENT_TYPE) {
+                        handler = scope.ServiceProvider.GetRequiredService<IEnterLocationEventHandler>();
                     }
                     if(handler != null)
                         await handler.HandleEvent(gameAggregate, evnt);
