@@ -9,7 +9,7 @@ using Xunit;
 using GameApi.Services;
 using GameApi.Adapters;
 using TbspRpgLib.Events;
-using TbspRpgLib.Events.Content;
+using TbspRpgLib.Events.Game.Content;
 
 using GameApi.Tests.Mocks;
 
@@ -66,7 +66,7 @@ namespace GameApi.Tests.Services {
             Assert.Single<Event>(Events);
             Event evt = Events[0];
             Assert.Equal("new_game", evt.Type);
-            var newGame = JsonSerializer.Deserialize<NewGame>(evt.GetDataJson());
+            var newGame = JsonSerializer.Deserialize<GameNew>(evt.GetDataJson());
             Assert.Equal(evt.GetStreamId(), newGame.Id);
         }
     }

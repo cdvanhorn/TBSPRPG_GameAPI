@@ -26,8 +26,8 @@ namespace GameApi.EventProcessors
                 base(
                     "game",
                     new string[] {
-                        Event.NEW_GAME_EVENT_TYPE,
-                        Event.ENTER_LOCATION_EVENT_TYPE
+                        Event.GAME_NEW_EVENT_TYPE,
+                        Event.LOCATION_ENTER_EVENT_TYPE
                     },
                     eventStoreSettings
                 )
@@ -55,9 +55,9 @@ namespace GameApi.EventProcessors
 
                     //figure out what handler to call based on event type
                     IEventHandler handler = null;
-                    if(eventType.TypeName == Event.NEW_GAME_EVENT_TYPE) {
+                    if(eventType.TypeName == Event.GAME_NEW_EVENT_TYPE) {
                         handler = scope.ServiceProvider.GetRequiredService<INewGameEventHandler>();
-                    } else if(eventType.TypeName == Event.ENTER_LOCATION_EVENT_TYPE) {
+                    } else if(eventType.TypeName == Event.LOCATION_ENTER_EVENT_TYPE) {
                         handler = scope.ServiceProvider.GetRequiredService<IEnterLocationEventHandler>();
                     }
                     if(handler != null)
