@@ -9,6 +9,7 @@ using Xunit;
 using GameApi.Services;
 using GameApi.Adapters;
 using TbspRpgLib.Events;
+using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events.Game.Content;
 
 using GameApi.Tests.Mocks;
@@ -21,10 +22,10 @@ namespace GameApi.Tests.Services {
 
         public GameLogicTests() {
             Events = new List<Event>();
-            var mockEventService = new Mock<IEventService>();
+            var mockEventService = new Mock<IAggregateService>();
             mockEventService.Setup(service => 
-                service.SendEvent(It.IsAny<Event>(), It.IsAny<bool>())
-            ).Callback<Event, bool>((evnt, n) => Events.Add(evnt));
+                service.AppendToAggregate(It.IsAny<string>(), It.IsAny<Event>(), It.IsAny<bool>())
+            ).Callback<string, Event, bool>((type, evnt, n) => Events.Add(evnt));
 
             GameService gameService = GameServiceMock.MockGameService();
             _adventureService = AdventureServiceMock.MockAdventureService();
@@ -65,9 +66,9 @@ namespace GameApi.Tests.Services {
             //assert
             Assert.Single<Event>(Events);
             Event evt = Events[0];
-            Assert.Equal("new_game", evt.Type);
+            Assert.Equal("game_new", evt.Type);
             var newGame = JsonSerializer.Deserialize<GameNew>(evt.GetDataJson());
-            Assert.Equal(evt.GetStreamId(), newGame.Id);
+            Assert.Equal(evt.GetDataId(), newGame.Id);
         }
     }
 }

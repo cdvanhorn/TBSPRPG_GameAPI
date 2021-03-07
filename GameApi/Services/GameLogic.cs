@@ -1,4 +1,5 @@
 using TbspRpgLib.Events;
+using TbspRpgLib.Aggregates;
 using GameApi.Adapters;
 using GameApi.Entities;
 
@@ -14,18 +15,18 @@ namespace GameApi.Services {
 
     public class GameLogic : IGameLogic{
         private IEventAdapter _eventAdapter;
-        private IEventService _eventService;
+        private IAggregateService _aggregateService;
         private IGameService _gameService;
         private IAdventureService _adventureService;
 
         public GameLogic(
                 IEventAdapter eventAdapter,
-                IEventService eventService,
+                IAggregateService aggService,
                 IGameService gameService,
                 IAdventureService adventureService)
         {
             _eventAdapter = eventAdapter;
-            _eventService = eventService;
+            _aggregateService = aggService;
             _gameService = gameService;
             _adventureService = adventureService;
         }
@@ -77,7 +78,11 @@ namespace GameApi.Services {
             game.Adventure = adventure;
 
             Event newGameEvent = _eventAdapter.NewGameEvent(game);
-            await _eventService.SendEvent(newGameEvent, true);
+            await _aggregateService.AppendToAggregate(
+                AggregateService.GAME_AGGREGATE_TYPE,
+                newGameEvent,
+                true)
+            ;
             return true;
         }
     }
