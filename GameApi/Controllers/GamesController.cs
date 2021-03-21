@@ -30,7 +30,7 @@ namespace GameApi.Controllers {
             return Ok(games);
         }
 
-        [Route("start/{name}")]
+        [Route("start/{adventureId}")]
         [Authorize]
         public async Task<IActionResult> Start(Guid adventureId) {
             Guid userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
@@ -40,7 +40,7 @@ namespace GameApi.Controllers {
             return Accepted();
         }
 
-        [HttpGet("{name}")]
+        [HttpGet("{adventureId}")]
         [Authorize]
         public async Task<IActionResult> GetByAdventure(Guid adventureId) {
             Guid userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
