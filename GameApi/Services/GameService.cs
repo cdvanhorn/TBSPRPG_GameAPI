@@ -12,6 +12,7 @@ namespace GameApi.Services {
     public interface IGameService : IServiceTrackingService{
         Task<List<Game>> GetAll();
         Task<GameViewModel> GetByUserIdAndAdventureName(string userid, string name);
+        Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId);
         Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId);
         Task<Game> GetGameById(Guid gameId);
         void AddGame(Game game);
@@ -39,8 +40,15 @@ namespace GameApi.Services {
             return new GameViewModel(game);
         }
 
+        public async Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId) {
+            var game = await _gameRespository.GetGameByUserIdAndAdventureId(userid, adventureId);
+            if(game == null)
+                return null;
+            return new GameViewModel(game);
+        }
+
         public Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId) {
-            return _gameRespository.GetGameByUserIdAndAdventureId(userid, adventureId);
+            return  _gameRespository.GetGameByUserIdAndAdventureId(userid, adventureId);
         }
 
         public Task<Game> GetGameById(Guid gameId) {

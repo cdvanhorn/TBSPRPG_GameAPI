@@ -32,9 +32,9 @@ namespace GameApi.Controllers {
 
         [Route("start/{name}")]
         [Authorize]
-        public async Task<IActionResult> Start(string name) {
-            var userId = (string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY];
-            var success = await _gameLogic.StartGame(userId, name);
+        public async Task<IActionResult> Start(Guid adventureId) {
+            Guid userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
+            var success = await _gameLogic.StartGame(userId, adventureId);
             if(!success)
                 return BadRequest(new { message = "couldn't start game" });
             return Accepted();
@@ -42,9 +42,9 @@ namespace GameApi.Controllers {
 
         [HttpGet("{name}")]
         [Authorize]
-        public async Task<IActionResult> GetByAdventure(string name) {
-            var userId = (string)HttpContext.Items["UserId"];
-            var game = await _gameService.GetByUserIdAndAdventureName(userId, name);
+        public async Task<IActionResult> GetByAdventure(Guid adventureId) {
+            Guid userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
+            var game = await _gameService.GetByUserIdAndAdventureIdVm(userId, adventureId);
             return Ok(game);
         }
 

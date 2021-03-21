@@ -41,7 +41,10 @@ namespace GameApi.Tests.Services {
             //arrange
             
             //act
-            await _gameLogic.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3f", "Demo");
+            await _gameLogic.StartGame(
+                new System.Guid("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3f"),
+                new System.Guid("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3e")
+            );
 
             //assert
             Assert.Empty(Events);
@@ -52,7 +55,10 @@ namespace GameApi.Tests.Services {
             //arrange
             
             //act
-            await _gameLogic.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f", "Demmo");
+            await _gameLogic.StartGame(
+                new System.Guid("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f"),
+                new System.Guid("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3a")
+            );
 
             //assert
             Assert.Empty(Events);
@@ -61,7 +67,10 @@ namespace GameApi.Tests.Services {
         [Fact]
         public async void StartGame_GameDoesntExist_EventGenerated() {
             //act
-            await _gameLogic.StartGame("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f", "Demo");
+            await _gameLogic.StartGame(
+                new System.Guid("d4e1de74-7271-4ed8-8e86-35dbb3cd6b4f"), 
+                new System.Guid("d4e1de74-7271-4ed8-8e86-35dbb3cd6b3e")
+            );
 
             //assert
             Assert.Single<Event>(Events);

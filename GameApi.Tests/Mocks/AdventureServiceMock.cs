@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 
 using Moq;
 
@@ -17,6 +18,8 @@ namespace GameApi.Tests.Mocks {
             var mockAdvRepo = new Mock<IAdventureRepository>();
             mockAdvRepo.Setup(repo => repo.GetAdventureByName(It.IsAny<string>()))
                 .ReturnsAsync((string name) => adventures.Find(adv => adv.Name == name));
+            mockAdvRepo.Setup(repo => repo.GetAdventureById(It.IsAny<Guid>()))
+                .ReturnsAsync((Guid id) => adventures.Find(adv => adv.Id == id));
             return new AdventureService(mockAdvRepo.Object);
         }
     }
