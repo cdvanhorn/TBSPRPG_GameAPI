@@ -32,7 +32,10 @@ namespace GameApi.Repositories {
             return _context.Games.AsQueryable().ToListAsync();
         }
 
-        public Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name) {
+        public Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name)
+        {
+            if (name == null)
+                return Task.FromResult<Game>(null);
             return _context.Games.AsQueryable().Include(g => g.Adventure)
                     .Where(g => g.UserId == userid)
                     .Where(g => g.Adventure.Name.ToLower() == name.ToLower())
