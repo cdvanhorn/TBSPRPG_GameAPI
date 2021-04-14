@@ -31,20 +31,15 @@ namespace GameApi.Services {
         }
 
         public async Task<GameViewModel> GetByUserIdAndAdventureName(string userid, string name) {
-            Guid guid;
-            if(!Guid.TryParse(userid, out guid))
+            if(!Guid.TryParse(userid, out var guid))
                 return null;
             var game = await _gameRespository.GetGameByUserIdAndAdventureName(guid, name);
-            if(game == null)
-                return null;
-            return new GameViewModel(game);
+            return game == null ? null : new GameViewModel(game);
         }
 
         public async Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId) {
             var game = await _gameRespository.GetGameByUserIdAndAdventureId(userid, adventureId);
-            if(game == null)
-                return null;
-            return new GameViewModel(game);
+            return game == null ? null : new GameViewModel(game);
         }
 
         public Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId) {

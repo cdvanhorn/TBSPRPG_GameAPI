@@ -14,10 +14,10 @@ namespace GameApi.Services {
     }
 
     public class GameLogic : IGameLogic{
-        private IEventAdapter _eventAdapter;
-        private IAggregateService _aggregateService;
-        private IGameService _gameService;
-        private IAdventureService _adventureService;
+        private readonly IEventAdapter _eventAdapter;
+        private readonly IAggregateService _aggregateService;
+        private readonly IGameService _gameService;
+        private readonly IAdventureService _adventureService;
 
         public GameLogic(
                 IEventAdapter eventAdapter,
