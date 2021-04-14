@@ -11,7 +11,6 @@ using TbspRpgLib.Services;
 namespace GameApi.Services {
     public interface IGameService : IServiceTrackingService{
         Task<List<Game>> GetAll();
-        Task<GameViewModel> GetByUserIdAndAdventureName(string userid, string name);
         Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId);
         Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId);
         Task<Game> GetGameById(Guid gameId);
@@ -28,13 +27,6 @@ namespace GameApi.Services {
 
         public Task<List<Game>> GetAll() {
             return _gameRespository.GetAllGames();
-        }
-
-        public async Task<GameViewModel> GetByUserIdAndAdventureName(string userid, string name) {
-            if(!Guid.TryParse(userid, out var guid))
-                return null;
-            var game = await _gameRespository.GetGameByUserIdAndAdventureName(guid, name);
-            return game == null ? null : new GameViewModel(game);
         }
 
         public async Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId) {

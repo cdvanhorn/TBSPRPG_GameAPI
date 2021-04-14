@@ -153,5 +153,55 @@ namespace GameApi.Tests.Repositories
             Assert.Null(game);
         }
         #endregion
+        
+        #region AddGame
+        [Fact]
+        public async Task AddGame_Valid_CreatesOne()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var repository = new GameRepository(context);
+            var game = new Game()
+            {
+                Id = Guid.NewGuid(),
+                UserId = _testUserId,
+                Adventure = new Adventure()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "TestThree"
+                }
+            };
+
+            //act
+            repository.AddGame(game);
+            repository.SaveChanges();
+            var dbGame = await repository.GetGameById(game.Id);
+
+            //assert
+            Assert.Equal(game.Id, dbGame.Id);
+            Assert.Equal(_testUserId, dbGame.UserId);
+            Assert.Equal(game.Adventure.Id, dbGame.AdventureId);
+            Assert.Equal("TestThree", dbGame.Adventure.Name);
+        }
+        #endregion
+
+        #region RemoveAllGames
+
+        [Fact]
+        public async Task RemoveAllGames_NoGames()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var repository = new GameRepository(context);
+            
+            //act
+            repository.RemoveAllGames();
+            repository.SaveChanges();
+            var games = await repository.GetAllGames();
+
+            //assert
+            Assert.Empty(games);
+        }
+        #endregion
     }
 }

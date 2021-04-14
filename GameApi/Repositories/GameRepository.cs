@@ -15,7 +15,6 @@ namespace GameApi.Repositories {
         Task<List<Game>> GetAllGames();
         Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name);
         Task<Game> GetGameByUserIdAndAdventureId(Guid userid, Guid adventureId);
-        Task<int> InsertGameIfDoesntExist(Game game);
         void AddGame(Game game);
         Task RemoveAllGames();
         void SaveChanges();
@@ -51,16 +50,6 @@ namespace GameApi.Repositories {
 
         public Task<Game> GetGameById(Guid gameId) {
             return _context.Games.AsQueryable().Where(g => g.Id == gameId).Include(g => g.Adventure).FirstOrDefaultAsync();
-        }
-
-        public async Task<int> InsertGameIfDoesntExist(Game game) {
-            var dbGame = await GetGameById(game.Id);
-            if(dbGame == null) {
-                _context.Games.Add(game);
-                var updated = await _context.SaveChangesAsync();
-                return updated;
-            }
-            return 0;
         }
 
         public void AddGame(Game game) {
