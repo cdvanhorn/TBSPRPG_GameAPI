@@ -13,7 +13,6 @@ namespace GameApi.Repositories {
     public interface IGameRepository : IServiceTrackingRepository {
         Task<Game> GetGameById(Guid gameId);
         Task<List<Game>> GetAllGames();
-        Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name);
         Task<Game> GetGameByUserIdAndAdventureId(Guid userid, Guid adventureId);
         void AddGame(Game game);
         Task RemoveAllGames();
@@ -30,17 +29,7 @@ namespace GameApi.Repositories {
         public Task<List<Game>> GetAllGames() {
             return _context.Games.AsQueryable().ToListAsync();
         }
-
-        public Task<Game> GetGameByUserIdAndAdventureName(Guid userid, string name)
-        {
-            if (name == null)
-                return Task.FromResult<Game>(null);
-            return _context.Games.AsQueryable().Include(g => g.Adventure)
-                    .Where(g => g.UserId == userid)
-                    .Where(g => g.Adventure.Name.ToLower() == name.ToLower())
-                    .FirstOrDefaultAsync();
-        }
-
+        
         public Task<Game> GetGameByUserIdAndAdventureId(Guid userid, Guid adventureId) {
             return _context.Games.AsQueryable().Include(g => g.Adventure)
                     .Where(g => g.UserId == userid)

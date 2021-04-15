@@ -76,7 +76,7 @@ namespace GameApi.Tests.Repositories
         
         #region GetGameById
         [Fact]
-        public async Task GetGameById_Valid_ReturnGame()
+        public async Task GetGameById_Valid_ReturnOne()
         {
             //arrange
             await using var context = new GameContext(_dbContextOptions);
@@ -106,54 +106,7 @@ namespace GameApi.Tests.Repositories
             Assert.Null(game);
         }
         #endregion
-        
-        #region GetGameByUserIdAndAdventureName
-        [Fact]
-        public async Task GetGameByUserIdAndAdventureName_Valid_ReturnGame()
-        {
-            //arrange
-            await using var context = new GameContext(_dbContextOptions);
-            var repository = new GameRepository(context);
 
-            //act
-            var game = await repository.GetGameByUserIdAndAdventureName(_testUserId, "Test");
-
-            //assert
-            Assert.Equal(_testGameId, game.Id);
-            Assert.Equal(_testUserId, game.UserId);
-            Assert.Equal(_testAdventureId, game.AdventureId);
-            Assert.Equal("Test", game.Adventure.Name);
-        }
-        
-        [Fact]
-        public async Task GetGameByUserIdAndAdventureName_InValidUser_ReturnNone()
-        {
-            //arrange
-            await using var context = new GameContext(_dbContextOptions);
-            var repository = new GameRepository(context);
-
-            //act
-            var game = await repository.GetGameByUserIdAndAdventureName(Guid.NewGuid(), "Test");
-
-            //assert
-            Assert.Null(game);
-        }
-
-        [Fact]
-        public async Task GetGameByUserIdAndAdventureName_InValidAdventure_ReturnNone()
-        {
-            //arrange
-            await using var context = new GameContext(_dbContextOptions);
-            var repository = new GameRepository(context);
-
-            //act
-            var game = await repository.GetGameByUserIdAndAdventureName(_testUserId, null);
-
-            //assert
-            Assert.Null(game);
-        }
-        #endregion
-        
         #region AddGame
         [Fact]
         public async Task AddGame_Valid_CreatesOne()
@@ -195,7 +148,7 @@ namespace GameApi.Tests.Repositories
             var repository = new GameRepository(context);
             
             //act
-            repository.RemoveAllGames();
+            await repository.RemoveAllGames();
             repository.SaveChanges();
             var games = await repository.GetAllGames();
 
