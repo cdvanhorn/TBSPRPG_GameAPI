@@ -45,7 +45,7 @@ namespace GameApi.Services {
         public async Task AddGame(Game game) {
             //check if the game already exists
             Game dbGame = await _gameService.GetGameById(game.Id);
-            if(dbGame == null && game.AdventureId != null) {
+            if(dbGame == null) {
                 //the game doesn't exist add it
                 //attach the adventure object
                 var attached = await AttachAdventureToGame(game);

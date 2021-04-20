@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-using GameApi.Tests.Mocks;
-
 using GameApi.Adapters;
 using GameApi.Controllers;
 using GameApi.Entities;
@@ -16,13 +14,13 @@ using GameApi.Services;
 
 namespace GameApi.Tests.Controllers {
     public class GameControllerTests {
-        private GameService _gameService;
-        private AdventureService _adventureService;
-
-        public GameControllerTests() {
-            _gameService = GameServiceMock.MockGameService();
-            _adventureService = AdventureServiceMock.MockAdventureService();
-        }
+        // private GameService _gameService;
+        // private AdventureService _adventureService;
+        //
+        // public GameControllerTests() {
+        //     _gameService = GameServiceMock.MockGameService();
+        //     _adventureService = AdventureServiceMock.MockAdventureService();
+        // }
 
         // [Fact]
         // public async void Start_InvalidAdventureName_Return400() {
