@@ -25,7 +25,10 @@ namespace GameApi.Repositories {
             return _context.Adventures.AsQueryable().ToListAsync();
         }
 
-        public Task<Adventure> GetAdventureByName(string name) {
+        public Task<Adventure> GetAdventureByName(string name)
+        {
+            if (name == null)
+                return Task.FromResult<Adventure>(null);
             return _context.Adventures.AsQueryable()
                     .Where(adv => adv.Name.ToLower() == name.ToLower())
                     .FirstOrDefaultAsync();
