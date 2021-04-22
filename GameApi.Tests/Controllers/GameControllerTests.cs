@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using GameApi.Controllers;
 using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Services;
+using GameApi.ViewModels;
 using Microsoft.AspNetCore.Http;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
@@ -147,6 +149,67 @@ namespace GameApi.Tests.Controllers {
             Assert.Equal("game_new", evt.Type);
             var newGame = JsonSerializer.Deserialize<GameNew>(evt.GetDataJson());
             Assert.Equal(evt.GetDataId(), newGame.Id);
+        }
+        #endregion
+        
+        #region GetAll
+        [Fact]
+        public async void GetAll_ReturnAll()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var events = new List<Event>();
+            var controller = CreateController(context, events);
+            
+            //act
+            var result = await controller.GetAll();
+
+            //assert
+            var okObjectResult = result as OkObjectResult;
+            Assert.NotNull(okObjectResult);
+            var games = okObjectResult.Value as IEnumerable<Game>;
+            Assert.NotNull(games);
+            Assert.Equal(2, games.Count());
+        }
+        #endregion
+        
+        #region GetByAdventure
+        [Fact]
+        public async void GetByAdventure_Valid_ReturnOne()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var events = new List<Event>();
+            var controller = CreateController(context, events);
+            
+            //act
+            var result = await controller.GetByAdventure(_testAdventureId);
+            
+            //assert
+            var okObjectResult = result as OkObjectResult;
+            Assert.NotNull(okObjectResult);
+            var game = okObjectResult.Value as GameViewModel;
+            Assert.NotNull(game);
+            Assert.Equal(_testGameId.ToString(), game.Id);
+            Assert.Equal(_testAdventureId.ToString(), game.AdventureId);
+        }
+
+        [Fact]
+        public async void GetByAdventure_NoGame_ReturnNone()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var events = new List<Event>();
+            var controller = CreateController(context, events);
+
+            //act
+            var result = await controller.GetByAdventure(Guid.NewGuid());
+
+            //assert
+            var okObjectResult = result as OkObjectResult;
+            Assert.NotNull(okObjectResult);
+            var game = okObjectResult.Value as GameViewModel;
+            Assert.Null(game);
         }
         #endregion
     }
