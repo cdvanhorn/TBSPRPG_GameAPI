@@ -167,7 +167,7 @@ namespace GameApi.Tests.Controllers {
             //assert
             var okObjectResult = result as OkObjectResult;
             Assert.NotNull(okObjectResult);
-            var games = okObjectResult.Value as IEnumerable<Game>;
+            var games = okObjectResult.Value as IEnumerable<GameViewModel>;
             Assert.NotNull(games);
             Assert.Equal(2, games.Count());
         }
@@ -190,8 +190,8 @@ namespace GameApi.Tests.Controllers {
             Assert.NotNull(okObjectResult);
             var game = okObjectResult.Value as GameViewModel;
             Assert.NotNull(game);
-            Assert.Equal(_testGameId.ToString(), game.Id);
-            Assert.Equal(_testAdventureId.ToString(), game.AdventureId);
+            Assert.Equal(_testGameId, game.Id);
+            Assert.Equal(_testAdventureId, game.AdventureId);
         }
 
         [Fact]

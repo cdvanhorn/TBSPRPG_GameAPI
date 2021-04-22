@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using GameApi.Entities;
@@ -11,6 +12,7 @@ using TbspRpgLib.Services;
 namespace GameApi.Services {
     public interface IGameService : IServiceTrackingService{
         Task<List<Game>> GetAll();
+        Task<List<GameViewModel>> GetAllVm();
         Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId);
         Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId);
         Task<Game> GetGameById(Guid gameId);
@@ -27,6 +29,11 @@ namespace GameApi.Services {
 
         public Task<List<Game>> GetAll() {
             return _gameRepository.GetAllGames();
+        }
+        
+        public async Task<List<GameViewModel>> GetAllVm() {
+            var games = await _gameRepository.GetAllGames();
+            return games.Select(game => new GameViewModel(game)).ToList();
         }
 
         public async Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId) {

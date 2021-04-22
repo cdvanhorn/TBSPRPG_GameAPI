@@ -26,7 +26,7 @@ namespace GameApi.Controllers {
         [Authorize]
         public async Task<IActionResult> GetAll()
         {
-            var games = await _gameService.GetAll();
+            var games = await _gameService.GetAllVm();
             return Ok(games);
         }
 

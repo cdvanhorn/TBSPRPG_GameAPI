@@ -78,6 +78,24 @@ namespace GameApi.Tests.Services
             Assert.Equal(_testGameId, games[0].Id);
             Assert.Equal(_testUserId, games[1].UserId);
         }
+        
+        [Fact]
+        public async Task GetAllVm_ReturnsAll()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var service = CreateService(context);
+
+            //act
+            var games = await service.GetAllVm();
+            
+            //assert
+            Assert.Equal(2, games.Count);
+            Assert.Equal(_testUserId, games[0].UserId);
+            Assert.Equal(_testAdventureId, games[0].AdventureId);
+            Assert.Equal(_testGameId, games[0].Id);
+            Assert.Equal(_testUserId, games[1].UserId);
+        }
         #endregion
         
         #region GetByUserIdAndAdventureId
@@ -109,9 +127,9 @@ namespace GameApi.Tests.Services
             var game = await service.GetByUserIdAndAdventureIdVm(_testUserId, _testAdventureId);
             
             //assert
-            Assert.Equal(_testGameId.ToString(), game.Id);
-            Assert.Equal(_testUserId.ToString(), game.UserId);
-            Assert.Equal(_testAdventureId.ToString(), game.AdventureId);
+            Assert.Equal(_testGameId, game.Id);
+            Assert.Equal(_testUserId, game.UserId);
+            Assert.Equal(_testAdventureId, game.AdventureId);
         }
         #endregion
         
