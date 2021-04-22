@@ -13,17 +13,17 @@ namespace GameApi.EventProcessors {
     }
 
     public class EnterLocationEventHandler : EventHandler, IEnterLocationEventHandler {
-        private IGameService _gameService;
+        private readonly IGameService _gameService;
 
-        public EnterLocationEventHandler(IGameService gameService) : base() {
+        public EnterLocationEventHandler(IGameService gameService) {
             _gameService = gameService;
         }
 
         public async Task HandleEvent(GameAggregate gameAggregate, Event evnt) {
-            Game game = _gameAdapter.ToEntity(gameAggregate);
+            var game = _gameAdapter.ToEntity(gameAggregate);
             //check if the game exists if it doesn't throw an exception
             //we're processing this event before the new_game event
-            Game dbGame = await _gameService.GetGameById(game.Id);
+            var dbGame = await _gameService.GetGameById(game.Id);
             if(dbGame == null) {
                 throw new Exception("can't process event before game in database");
             }

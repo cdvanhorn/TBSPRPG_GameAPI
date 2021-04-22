@@ -9,9 +9,9 @@ namespace GameApi.EventProcessors {
     }
 
     public class EventHandler {
-        protected IGameAggregateAdapter _gameAdapter;
+        protected readonly IGameAggregateAdapter _gameAdapter;
 
-        public EventHandler() {
+        protected EventHandler() {
             _gameAdapter = new GameAggregateAdapter();
         }
     }

@@ -14,22 +14,22 @@ namespace GameApi.Services {
     }
 
     public class AdventureService : IAdventureService {
-        private IAdventureRepository _adventureRespository;
+        private readonly IAdventureRepository _adventureRepository;
 
         public AdventureService(IAdventureRepository adventureRepository) {
-            _adventureRespository = adventureRepository;
+            _adventureRepository = adventureRepository;
         }
 
         public Task<List<Adventure>> GetAllAdventures() {
-            return _adventureRespository.GetAllAdventures();
+            return _adventureRepository.GetAllAdventures();
         }
 
         public Task<Adventure> GetAdventureByName(string name) {
-            return _adventureRespository.GetAdventureByName(name);
+            return _adventureRepository.GetAdventureByName(name);
         }
 
         public Task<Adventure> GetAdventureById(Guid advId) {
-            return _adventureRespository.GetAdventureById(advId);
+            return _adventureRepository.GetAdventureById(advId);
         }
     }
 }

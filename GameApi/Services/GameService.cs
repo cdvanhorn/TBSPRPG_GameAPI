@@ -19,38 +19,38 @@ namespace GameApi.Services {
     }
 
     public class GameService : ServiceTrackingService, IGameService {
-        private IGameRepository _gameRespository;
+        private readonly IGameRepository _gameRepository;
 
         public GameService(IGameRepository gameRepository) : base(gameRepository){
-            _gameRespository = gameRepository;
+            _gameRepository = gameRepository;
         }
 
         public Task<List<Game>> GetAll() {
-            return _gameRespository.GetAllGames();
+            return _gameRepository.GetAllGames();
         }
 
         public async Task<GameViewModel> GetByUserIdAndAdventureIdVm(Guid userid, Guid adventureId) {
-            var game = await _gameRespository.GetGameByUserIdAndAdventureId(userid, adventureId);
+            var game = await _gameRepository.GetGameByUserIdAndAdventureId(userid, adventureId);
             return game == null ? null : new GameViewModel(game);
         }
 
         public Task<Game> GetByUserIdAndAdventureId(Guid userid, Guid adventureId) {
-            return  _gameRespository.GetGameByUserIdAndAdventureId(userid, adventureId);
+            return  _gameRepository.GetGameByUserIdAndAdventureId(userid, adventureId);
         }
 
         public Task<Game> GetGameById(Guid gameId) {
-            return _gameRespository.GetGameById(gameId);
+            return _gameRepository.GetGameById(gameId);
         }
 
         public void AddGame(Game game) {
-            _gameRespository.AddGame(game);
+            _gameRepository.AddGame(game);
         }
 
         public async Task ClearData() {
-            await _gameRespository.RemoveAllGames();
-            await _gameRespository.RemoveAllProcessedEvents();
-            await _gameRespository.RemoveAllEventTypePositions();
-            _gameRespository.SaveChanges();
+            await _gameRepository.RemoveAllGames();
+            await _gameRepository.RemoveAllProcessedEvents();
+            await _gameRepository.RemoveAllEventTypePositions();
+            _gameRepository.SaveChanges();
         }
     }
 }

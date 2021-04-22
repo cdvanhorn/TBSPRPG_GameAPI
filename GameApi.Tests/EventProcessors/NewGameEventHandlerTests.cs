@@ -51,7 +51,7 @@ namespace GameApi.Tests.EventProcessors
             context.SaveChanges();
         }
 
-        public NewGameEventHandler CreateNewGameEventHandler(GameContext context, ICollection<Event> events)
+        private NewGameEventHandler CreateNewGameEventHandler(GameContext context, ICollection<Event> events)
         {
             var gameRepository = new GameRepository(context);
             var adventureRepository = new AdventureRepository(context);

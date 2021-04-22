@@ -15,7 +15,7 @@ namespace GameApi.Repositories {
     }
 
     public class AdventureRepository : IAdventureRepository {
-        private GameContext _context;
+        private readonly GameContext _context;
 
         public AdventureRepository(GameContext context) {
             _context = context;

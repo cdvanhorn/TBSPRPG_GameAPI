@@ -14,8 +14,8 @@ namespace GameApi.Controllers {
     [ApiController]
     [Route("/api/[controller]")]
     public class GamesController : ControllerBase {
-        IGameService _gameService;
-        IGameLogic _gameLogic;
+        private readonly IGameService _gameService;
+        private readonly IGameLogic _gameLogic;
 
         public GamesController(IGameService gameService, IGameLogic gameLogic) {
             _gameService = gameService;
@@ -30,20 +30,20 @@ namespace GameApi.Controllers {
             return Ok(games);
         }
 
-        [Route("start/{adventureId}")]
+        [Route("start/{adventureId:guid}")]
         [Authorize]
         public async Task<IActionResult> Start(Guid adventureId) {
-            Guid userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
+            var userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
             var success = await _gameLogic.StartGame(userId, adventureId);
             if(!success)
                 return BadRequest(new { message = "couldn't start game" });
             return Accepted();
         }
 
-        [HttpGet("{adventureId}")]
+        [HttpGet("{adventureId:guid}")]
         [Authorize]
         public async Task<IActionResult> GetByAdventure(Guid adventureId) {
-            Guid userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
+            var userId = Guid.Parse((string)HttpContext.Items[AuthorizeAttribute.USER_ID_CONTEXT_KEY]);
             var game = await _gameService.GetByUserIdAndAdventureIdVm(userId, adventureId);
             return Ok(game);
         }

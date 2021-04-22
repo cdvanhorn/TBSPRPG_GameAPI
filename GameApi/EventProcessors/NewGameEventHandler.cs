@@ -13,14 +13,14 @@ namespace GameApi.EventProcessors {
     }
 
     public class NewGameEventHandler : EventHandler, INewGameEventHandler {
-        private IGameLogic _gameLogic;
+        private readonly IGameLogic _gameLogic;
 
         public NewGameEventHandler(IGameLogic gameLogic) : base() {
             _gameLogic = gameLogic;
         }
 
         public async Task HandleEvent(GameAggregate gameAggregate, Event evnt) {
-            Game game = _gameAdapter.ToEntity(gameAggregate);
+            var game = _gameAdapter.ToEntity(gameAggregate);
             Console.WriteLine($"Writing Game {game.Id} {gameAggregate.GlobalPosition}!!");
 
             //update the game

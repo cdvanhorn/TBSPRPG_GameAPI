@@ -39,8 +39,8 @@ namespace GameApi.EventProcessors
         }
 
         protected override async Task HandleEvent(Aggregate aggregate, Event evnt) {
-            GameAggregate gameAggregate = (GameAggregate)aggregate;
-            EventType eventType = GetEventTypeByName(evnt.Type);
+            var gameAggregate = (GameAggregate)aggregate;
+            var eventType = GetEventTypeByName(evnt.Type);
 
             using(var scope = _scopeFactory.CreateScope()) {
                 var context = scope.ServiceProvider.GetRequiredService<GameContext>();

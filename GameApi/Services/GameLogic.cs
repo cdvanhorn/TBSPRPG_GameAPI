@@ -32,19 +32,16 @@ namespace GameApi.Services {
         }
 
         private async Task<bool> AttachAdventureToGame(Game game) {
-            if(game.Adventure == null && game.AdventureId != null) {
-                Adventure dbadv = await _adventureService.GetAdventureById(game.AdventureId);
-                if(dbadv != null) {
-                    game.Adventure = dbadv;
-                    return true;
-                }
-            }
-            return false;
+            if (game.Adventure != null || game.AdventureId == null) return false;
+            var dbadv = await _adventureService.GetAdventureById(game.AdventureId);
+            if (dbadv == null) return false;
+            game.Adventure = dbadv;
+            return true;
         }
 
         public async Task AddGame(Game game) {
             //check if the game already exists
-            Game dbGame = await _gameService.GetGameById(game.Id);
+            var dbGame = await _gameService.GetGameById(game.Id);
             if(dbGame == null) {
                 //the game doesn't exist add it
                 //attach the adventure object
@@ -58,21 +55,23 @@ namespace GameApi.Services {
         }
 
         public async Task<bool> StartGame(Guid userId, Guid adventureId) {
-            Adventure adventure = await _adventureService.GetAdventureById(adventureId);
+            var adventure = await _adventureService.GetAdventureById(adventureId);
             if(adventure == null)
                 return false;
 
-            Game game = await _gameService.GetByUserIdAndAdventureId(userId, adventure.Id);
+            var game = await _gameService.GetByUserIdAndAdventureId(userId, adventure.Id);
             if(game != null)
                 return false;
             
             //there isn't an existing game, we'll start a new one
-            game = new Game();
-            game.Id = Guid.NewGuid();
-            game.UserId = userId;
-            game.Adventure = adventure;
+            game = new Game
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Adventure = adventure
+            };
 
-            Event newGameEvent = _eventAdapter.NewGameEvent(game);
+            var newGameEvent = _eventAdapter.NewGameEvent(game);
             await _aggregateService.AppendToAggregate(
                 AggregateService.GAME_AGGREGATE_TYPE,
                 newGameEvent,
