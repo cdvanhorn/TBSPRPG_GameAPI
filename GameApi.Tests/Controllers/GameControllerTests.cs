@@ -103,6 +103,27 @@ namespace GameApi.Tests.Controllers {
         #endregion
         
         #region Start
+
+        [Fact]
+        public async void Start_GameExists_DoNothing()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var events = new List<Event>();
+            var controller = CreateController(context, events);
+            
+            //act
+            var result = await controller.Start(_testAdventureId);
+            
+            //assert
+            var acceptedResult = result as AcceptedResult;
+            Assert.NotNull(acceptedResult);
+            Assert.Equal(202, acceptedResult.StatusCode);
+            
+            //assert event not created
+            Assert.Empty(events);
+        }
+        
         [Fact]
         public async void Start_InvalidAdventureId_ReturnBadRequest()
         {

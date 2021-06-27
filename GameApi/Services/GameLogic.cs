@@ -61,7 +61,7 @@ namespace GameApi.Services {
 
             var game = await _gameService.GetByUserIdAndAdventureId(userId, adventure.Id);
             if(game != null)
-                return false;
+                return true;  //do nothing if the game already exists
             
             //there isn't an existing game, we'll start a new one
             game = new Game
