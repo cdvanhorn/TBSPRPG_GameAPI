@@ -7,5 +7,6 @@ namespace GameApi.Entities {
         public Guid UserId { get; set; }
         public Guid AdventureId { get; set; }
         public Adventure Adventure { get; set; }
+        public ICollection<Content> Contents { get; set; }
     }
 }
