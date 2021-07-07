@@ -39,9 +39,13 @@ namespace GameApi.Controllers
         public async Task<IActionResult> FilterContent(Guid gameId, [FromQuery] ContentFilterRequest filterRequest) {
             try
             {
-                // var content = await _contentService.GetPartialContentForGame(gameId, filterRequest);
-                // if(content.Count > 0)
-                //     return Ok(new ContentViewModel(content));
+                var content = await _contentService.GetPartialContentForGame(
+                    gameId,
+                    filterRequest.Direction, 
+                    (int?)filterRequest.Start,
+                    (int?)filterRequest.Count);
+                if(content.Count > 0)
+                    return Ok(new ContentViewModel(content));
                 return Ok();
             }
             catch (Exception e)
