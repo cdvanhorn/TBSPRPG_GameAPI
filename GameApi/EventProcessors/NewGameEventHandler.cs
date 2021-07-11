@@ -15,7 +15,8 @@ namespace GameApi.EventProcessors {
     public class NewGameEventHandler : EventHandler, INewGameEventHandler {
         private readonly IGameLogic _gameLogic;
 
-        public NewGameEventHandler(IGameLogic gameLogic) : base() {
+        public NewGameEventHandler(IGameLogic gameLogic,
+            IContentService contentService, IAdventureService adventureService) : base(contentService, adventureService) {
             _gameLogic = gameLogic;
         }
 
@@ -25,6 +26,17 @@ namespace GameApi.EventProcessors {
 
             //update the game
             await _gameLogic.AddGame(game);
+            
+            //add content
+            //get the source key for the adventure
+            
+            var content = new Content()
+            {
+                GameId = game.Id,
+                Position = evnt.StreamPosition,
+                SourceKey = await _adventureService.GetSourceKeyForAdventure(game.AdventureId, game.UserId)
+            };
+            await _contentService.AddContent(content);
         }
     }
 }

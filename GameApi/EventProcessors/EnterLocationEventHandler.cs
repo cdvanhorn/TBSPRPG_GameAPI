@@ -15,7 +15,8 @@ namespace GameApi.EventProcessors {
     public class EnterLocationEventHandler : EventHandler, IEnterLocationEventHandler {
         private readonly IGameService _gameService;
 
-        public EnterLocationEventHandler(IGameService gameService) {
+        public EnterLocationEventHandler(IGameService gameService,
+            IContentService contentService, IAdventureService adventureService): base(contentService, adventureService) {
             _gameService = gameService;
         }
 

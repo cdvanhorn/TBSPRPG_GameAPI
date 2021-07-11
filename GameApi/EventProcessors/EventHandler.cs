@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
 using GameApi.Adapters;
+using GameApi.Services;
 
 namespace GameApi.EventProcessors {
     public interface IEventHandler {
@@ -10,9 +11,13 @@ namespace GameApi.EventProcessors {
 
     public class EventHandler {
         protected readonly IGameAggregateAdapter _gameAdapter;
+        protected readonly IContentService _contentService;
+        protected readonly IAdventureService _adventureService;
 
-        protected EventHandler() {
+        protected EventHandler(IContentService contentService, IAdventureService adventureService) {
             _gameAdapter = new GameAggregateAdapter();
+            _contentService = contentService;
+            _adventureService = adventureService;
         }
     }
 }
