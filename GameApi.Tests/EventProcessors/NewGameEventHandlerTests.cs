@@ -11,6 +11,7 @@ using Moq;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
 using TbspRpgLib.Events.Game.Content;
+using TbspRpgLib.Tests.Mocks;
 using Xunit;
 
 namespace GameApi.Tests.EventProcessors
@@ -56,7 +57,10 @@ namespace GameApi.Tests.EventProcessors
             var gameRepository = new GameRepository(context);
             var adventureRepository = new AdventureRepository(context);
             var gameService = new GameService(gameRepository);
-            var adventureService = new AdventureService(adventureRepository);
+            var adventureService = new AdventureService(
+                adventureRepository, MockAdventureServiceLink.CreateMockAdventureServiceLink());
+            var contentService = new ContentService(
+                new ContentRepository(context));
             
             var aggregateService = new Mock<IAggregateService>();
             aggregateService.Setup(service => 
@@ -69,7 +73,7 @@ namespace GameApi.Tests.EventProcessors
                 gameService,
                 adventureService);
 
-            return new NewGameEventHandler(gameLogic);
+            return new NewGameEventHandler(gameLogic, contentService, adventureService);
         }
         #endregion
         

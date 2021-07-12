@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
 using TbspRpgLib.Events.Game.Content;
+using TbspRpgLib.Tests.Mocks;
 
 namespace GameApi.Tests.Controllers {
     public class GameControllerTests : InMemoryTest {
@@ -72,7 +73,8 @@ namespace GameApi.Tests.Controllers {
             var gameRepository = new GameRepository(context);
             var adventureRepository = new AdventureRepository(context);
             var gameService = new GameService(gameRepository);
-            var adventureService = new AdventureService(adventureRepository);
+            var adventureService = new AdventureService(
+                adventureRepository, MockAdventureServiceLink.CreateMockAdventureServiceLink());
             
             var aggregateService = new Mock<IAggregateService>();
             aggregateService.Setup(service => 

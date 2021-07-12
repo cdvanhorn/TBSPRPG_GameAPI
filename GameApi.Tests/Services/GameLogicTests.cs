@@ -14,6 +14,7 @@ using GameApi.Repositories;
 using TbspRpgLib.Events;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events.Game.Content;
+using TbspRpgLib.Tests.Mocks;
 
 namespace GameApi.Tests.Services {
     public class GameLogicTests : InMemoryTest{
@@ -66,7 +67,9 @@ namespace GameApi.Tests.Services {
             var gameRepository = new GameRepository(context);
             var adventureRepository = new AdventureRepository(context);
             var gameService = new GameService(gameRepository);
-            var adventureService = new AdventureService(adventureRepository);
+            var adventureService = new AdventureService(
+                adventureRepository,
+                MockAdventureServiceLink.CreateMockAdventureServiceLink());
             
             var aggregateService = new Mock<IAggregateService>();
             aggregateService.Setup(service => 

@@ -4,6 +4,7 @@ using GameApi.EventProcessors;
 using GameApi.Repositories;
 using GameApi.Services;
 using TbspRpgLib.Aggregates;
+using TbspRpgLib.Tests.Mocks;
 using Xunit;
 
 namespace GameApi.Tests.EventProcessors
@@ -29,7 +30,11 @@ namespace GameApi.Tests.EventProcessors
         {
             var repository = new GameRepository(context);
             var service = new GameService(repository);
-            return new EnterLocationEventHandler(service);
+            var contentService = new ContentService(
+                new ContentRepository(context));
+            var adventureService = new AdventureService(
+                new AdventureRepository(context), MockAdventureServiceLink.CreateMockAdventureServiceLink());
+            return new EnterLocationEventHandler(service, contentService, adventureService);
         }
         #endregion
         

@@ -2,6 +2,7 @@ using System;
 using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Services;
+using TbspRpgLib.Tests.Mocks;
 using Xunit;
 
 namespace GameApi.Tests.Services
@@ -42,7 +43,7 @@ namespace GameApi.Tests.Services
         private AdventureService CreateService(GameContext context)
         {
             var repository = new AdventureRepository(context);
-            return new AdventureService(repository);
+            return new AdventureService(repository, MockAdventureServiceLink.CreateMockAdventureServiceLink());
         }
         #endregion
         
