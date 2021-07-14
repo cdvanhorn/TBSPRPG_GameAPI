@@ -1,7 +1,10 @@
 using System;
+using System.Text.Json;
 using GameApi.Entities;
+using GameApi.Entities.AdventureService;
 using GameApi.Repositories;
 using GameApi.Services;
+using TbspRpgLib.InterServiceCommunication;
 using TbspRpgLib.Tests.Mocks;
 using Xunit;
 
@@ -40,10 +43,12 @@ namespace GameApi.Tests.Services
             context.SaveChanges();
         }
 
-        private AdventureService CreateService(GameContext context)
+        private AdventureService CreateService(GameContext context, IscResponse adventureServiceLinkResponse = null)
         {
             var repository = new AdventureRepository(context);
-            return new AdventureService(repository, MockAdventureServiceLink.CreateMockAdventureServiceLink());
+            return new AdventureService(repository,
+                MockAdventureServiceLink.CreateMockAdventureServiceLink(
+                    null, adventureServiceLinkResponse));
         }
         #endregion
         
@@ -143,6 +148,54 @@ namespace GameApi.Tests.Services
             //assert
             Assert.Null(adventure);
         }
+        #endregion
+
+        #region GetSourceKeyForAdventure
+
+        [Fact]
+        private async void GetSourceKeyForAdventure_Valid_KeyReturned()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var adventureIsc = new AdventureIsc()
+            {
+                Id = _testAdventureId,
+                Name = "TestAdventure",
+                SourceKey = Guid.NewGuid()
+            };
+            var service = CreateService(context, new IscResponse()
+            {
+              Content = JsonSerializer.Serialize(adventureIsc),
+              IsSuccessful = true,
+              StatusCode = 200
+            });
+
+            //act
+            var sourceKey = await service.GetSourceKeyForAdventure(_testAdventureId, Guid.NewGuid());
+
+            //assert
+            Assert.Equal(adventureIsc.SourceKey, sourceKey);
+        }
+        
+        [Fact]
+        private async void GetSourceKeyForAdventure_Unsuccessful_EmptyGuid()
+        {
+            //arrange
+            await using var context = new GameContext(_dbContextOptions);
+            var service = CreateService(context, new IscResponse()
+            {
+                Content = "bad request",
+                IsSuccessful = false,
+                StatusCode = 400
+            });
+
+            //act
+            var sourceKey = await service.GetSourceKeyForAdventure(_testAdventureId, Guid.NewGuid());
+
+            //assert
+            Assert.Equal(Guid.Empty, sourceKey);
+        }
+
         #endregion
     }
 }
