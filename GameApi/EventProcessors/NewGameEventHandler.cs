@@ -28,15 +28,13 @@ namespace GameApi.EventProcessors {
             await _gameLogic.AddGame(game);
             
             //add content
-            //get the source key for the adventure
-            
-            // var content = new Content()
-            // {
-            //     GameId = game.Id,
-            //     Position = evnt.StreamPosition,
-            //     SourceKey = await _adventureService.GetSourceKeyForAdventure(game.AdventureId, game.UserId)
-            // };
-            // await _contentService.AddContent(content);
+            var content = new Content()
+            {
+                GameId = game.Id,
+                Position = evnt.StreamPosition,
+                SourceKey = await _adventureService.GetSourceKeyForAdventure(game.AdventureId, game.UserId)
+            };
+            await _contentService.AddContent(content);
         }
     }
 }

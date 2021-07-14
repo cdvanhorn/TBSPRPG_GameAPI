@@ -4,13 +4,16 @@ using System.Linq;
 using System.Text.Json;
 using GameApi.Adapters;
 using GameApi.Entities;
+using GameApi.Entities.AdventureService;
 using GameApi.EventProcessors;
 using GameApi.Repositories;
 using GameApi.Services;
 using Moq;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
-using TbspRpgLib.Events.Game.Content;
+using TbspRpgLib.Events.Content;
+using TbspRpgLib.Events.Game;
+using TbspRpgLib.InterServiceCommunication;
 using TbspRpgLib.Tests.Mocks;
 using Xunit;
 
@@ -52,13 +55,15 @@ namespace GameApi.Tests.EventProcessors
             context.SaveChanges();
         }
 
-        private NewGameEventHandler CreateNewGameEventHandler(GameContext context, ICollection<Event> events)
+        private NewGameEventHandler CreateNewGameEventHandler(GameContext context,
+            ICollection<Event> events, IscResponse adventureServiceLinkResponse = null)
         {
             var gameRepository = new GameRepository(context);
             var adventureRepository = new AdventureRepository(context);
             var gameService = new GameService(gameRepository);
             var adventureService = new AdventureService(
-                adventureRepository, MockAdventureServiceLink.CreateMockAdventureServiceLink());
+                adventureRepository, MockAdventureServiceLink.CreateMockAdventureServiceLink(
+                    null, adventureServiceLinkResponse));
             var contentService = new ContentService(
                 new ContentRepository(context));
             
@@ -91,7 +96,6 @@ namespace GameApi.Tests.EventProcessors
             });
             context.SaveChanges();
             var events = new List<Event>();
-            var handler = CreateNewGameEventHandler(context, events);
             var gameId = Guid.NewGuid();
             var agg = new GameAggregate()
             {
@@ -100,9 +104,24 @@ namespace GameApi.Tests.EventProcessors
                 UserId = _testUserId.ToString(),
                 GlobalPosition = 10
             };
+            var adventureIsc = new AdventureIsc()
+            {
+                Id = adventureId,
+                Name = "NotStartedAdventure",
+                SourceKey = Guid.NewGuid()
+            };
+            var handler = CreateNewGameEventHandler(context, events, new IscResponse()
+            {
+                Content = JsonSerializer.Serialize(adventureIsc),
+                IsSuccessful = true,
+                StatusCode = 200
+            });
 
             //act
-            await handler.HandleEvent(agg, null);
+            await handler.HandleEvent(agg, new GameNewEvent()
+            {
+                StreamPosition = 0
+            });
             context.SaveChanges();
 
             //assert
@@ -118,7 +137,6 @@ namespace GameApi.Tests.EventProcessors
             //arrange
             await using var context = new GameContext(_dbContextOptions);
             var events = new List<Event>();
-            var handler = CreateNewGameEventHandler(context, events);
             var agg = new GameAggregate()
             {
                 Id = _testGameId.ToString(),
@@ -126,9 +144,24 @@ namespace GameApi.Tests.EventProcessors
                 UserId = _testUserId.ToString(),
                 GlobalPosition = 10
             };
+            var adventureIsc = new AdventureIsc()
+            {
+                Id = _testAdventureId,
+                Name = "TestAdventure",
+                SourceKey = Guid.NewGuid()
+            };
+            var handler = CreateNewGameEventHandler(context, events, new IscResponse()
+            {
+                Content = JsonSerializer.Serialize(adventureIsc),
+                IsSuccessful = true,
+                StatusCode = 200
+            });
             
             //act
-            await handler.HandleEvent(agg, null);
+            await handler.HandleEvent(agg, new GameNewEvent()
+            {
+                StreamPosition = 0
+            });
             context.SaveChanges();
 
             //assert
