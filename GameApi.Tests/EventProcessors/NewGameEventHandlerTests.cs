@@ -11,7 +11,6 @@ using GameApi.Services;
 using Moq;
 using TbspRpgLib.Aggregates;
 using TbspRpgLib.Events;
-using TbspRpgLib.Events.Content;
 using TbspRpgLib.Events.Game;
 using TbspRpgLib.InterServiceCommunication;
 using TbspRpgLib.Tests.Mocks;
@@ -48,6 +47,15 @@ namespace GameApi.Tests.EventProcessors
                 {
                     Id = _testAdventureId,
                     Name = "Test"
+                },
+                Contents = new List<Content>()
+                {
+                    new Content()
+                    {
+                        GameId = _testGameId,
+                        Position = 0,
+                        SourceKey = Guid.NewGuid()
+                    }
                 }
             };
             
@@ -120,7 +128,7 @@ namespace GameApi.Tests.EventProcessors
             //act
             await handler.HandleEvent(agg, new GameNewEvent()
             {
-                StreamPosition = 0
+                StreamPosition = 1
             });
             context.SaveChanges();
 
@@ -129,6 +137,10 @@ namespace GameApi.Tests.EventProcessors
             Assert.Equal(2, games.Count());
             Assert.NotNull(games.FirstOrDefault(g => g.Id == _testGameId));
             Assert.NotNull(games.FirstOrDefault(g => g.Id == gameId));
+            //there should be content
+            Assert.Equal(2, context.Contents.Count());
+            Assert.Equal(adventureIsc.SourceKey, 
+                context.Contents.FirstOrDefault( c => c.Position == 1).SourceKey);
         }
 
         [Fact]
@@ -168,6 +180,8 @@ namespace GameApi.Tests.EventProcessors
             var games = context.Games;
             Assert.Equal(1, games.Count());
             Assert.NotNull(games.FirstOrDefault(g => g.Id == _testGameId));
+            //make sure still only one content object
+            Assert.Single(context.Contents);
         }
         #endregion
     }
