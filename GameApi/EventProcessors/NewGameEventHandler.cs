@@ -13,28 +13,25 @@ namespace GameApi.EventProcessors {
     }
 
     public class NewGameEventHandler : EventHandler, INewGameEventHandler {
-        private readonly IGameLogic _gameLogic;
 
-        public NewGameEventHandler(IGameLogic gameLogic,
-            IContentService contentService, IAdventureService adventureService) : base(contentService, adventureService) {
-            _gameLogic = gameLogic;
-        }
+        public NewGameEventHandler(IEventHandlerServices eventHandlerServices) : base(eventHandlerServices) { }
 
-        public async Task HandleEvent(GameAggregate gameAggregate, Event evnt) {
-            var game = _gameAdapter.ToEntity(gameAggregate);
+        public async Task HandleEvent(GameAggregate gameAggregate, Event evnt)
+        {
+            var game = _eventHandlerServices.GameAggregateAdapter.ToEntity(gameAggregate);
             Console.WriteLine($"Writing Game {game.Id} {gameAggregate.GlobalPosition}!!");
 
             //update the game
-            await _gameLogic.AddGame(game);
+            await _eventHandlerServices.GameLogic.AddGame(game);
             
             //add content
             var content = new Content()
             {
                 GameId = game.Id,
                 Position = evnt.StreamPosition,
-                SourceKey = await _adventureService.GetSourceKeyForAdventure(game.AdventureId, game.UserId)
+                SourceKey = await _eventHandlerServices.AdventureService.GetSourceKeyForAdventure(game.AdventureId, game.UserId)
             };
-            await _contentService.AddContent(content);
+            await _eventHandlerServices.ContentService.AddContent(content);
         }
     }
 }

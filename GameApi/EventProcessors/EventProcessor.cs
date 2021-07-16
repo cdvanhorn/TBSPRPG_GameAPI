@@ -1,18 +1,12 @@
 using System;
 using System.Threading.Tasks;
-
-using GameApi.Adapters;
-using GameApi.Entities;
 using GameApi.Repositories;
 using GameApi.Services;
-
-using TbspRpgLib.EventProcessors;
-using TbspRpgLib.Aggregates;
-using TbspRpgLib.Settings;
-using TbspRpgLib.Events;
-using TbspRpgLib.Entities;
-
 using Microsoft.Extensions.DependencyInjection;
+using TbspRpgLib.Aggregates;
+using TbspRpgLib.EventProcessors;
+using TbspRpgLib.Events;
+using TbspRpgLib.Settings;
 
 namespace GameApi.EventProcessors
 {
@@ -27,7 +21,7 @@ namespace GameApi.EventProcessors
                     "game",
                     new string[] {
                         Event.GAME_NEW_EVENT_TYPE,
-                        Event.LOCATION_ENTER_EVENT_TYPE
+                        Event.GAME_ADD_SOURCE_KEY_EVENT_TYPE
                     },
                     eventStoreSettings
                 )
@@ -44,7 +38,6 @@ namespace GameApi.EventProcessors
 
             using(var scope = _scopeFactory.CreateScope()) {
                 var context = scope.ServiceProvider.GetRequiredService<GameContext>();
-                var gameLogic = scope.ServiceProvider.GetRequiredService<IGameLogic>();
                 var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
                 
                 var transaction = context.Database.BeginTransaction();
@@ -57,8 +50,8 @@ namespace GameApi.EventProcessors
                     IEventHandler handler = null;
                     if(eventType.TypeName == Event.GAME_NEW_EVENT_TYPE) {
                         handler = scope.ServiceProvider.GetRequiredService<INewGameEventHandler>();
-                    } else if(eventType.TypeName == Event.LOCATION_ENTER_EVENT_TYPE) {
-                        handler = scope.ServiceProvider.GetRequiredService<IEnterLocationEventHandler>();
+                    } else if(eventType.TypeName == Event.GAME_ADD_SOURCE_KEY_EVENT_TYPE) {
+                        handler = scope.ServiceProvider.GetRequiredService<IGameAddSourceKeyEventHandler>();
                     }
                     if(handler != null)
                         await handler.HandleEvent(gameAggregate, evnt);

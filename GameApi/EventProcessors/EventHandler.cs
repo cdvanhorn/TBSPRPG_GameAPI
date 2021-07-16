@@ -5,19 +5,47 @@ using GameApi.Adapters;
 using GameApi.Services;
 
 namespace GameApi.EventProcessors {
+    public interface IEventHandlerServices
+    {
+        IAdventureService AdventureService { get; }
+        IContentService ContentService { get; }
+        IGameAggregateAdapter GameAggregateAdapter { get; }
+        IGameLogic GameLogic { get; }
+        IGameService GameService { get; }
+    }
+
+    public class EventHandlerServices : IEventHandlerServices
+    {
+        public EventHandlerServices(IAdventureService adventureService,
+            IContentService contentService,
+            IGameLogic gameLogic,
+            IGameService gameService)
+        {
+            GameAggregateAdapter = new GameAggregateAdapter();
+            AdventureService = adventureService;
+            ContentService = contentService;
+            GameLogic = gameLogic;
+            GameService = gameService;
+        }
+
+        public IAdventureService AdventureService { get; }
+        public IContentService ContentService { get; }
+        public IGameAggregateAdapter GameAggregateAdapter { get; }
+        public IGameLogic GameLogic { get; }
+        public IGameService GameService { get; }
+    }
+    
     public interface IEventHandler {
         Task HandleEvent(GameAggregate gameAggregate, Event evnt);
     }
 
-    public class EventHandler {
-        protected readonly IGameAggregateAdapter _gameAdapter;
-        protected readonly IContentService _contentService;
-        protected readonly IAdventureService _adventureService;
+    public class EventHandler
+    {
+        protected readonly IEventHandlerServices _eventHandlerServices;
 
-        protected EventHandler(IContentService contentService, IAdventureService adventureService) {
-            _gameAdapter = new GameAggregateAdapter();
-            _contentService = contentService;
-            _adventureService = adventureService;
+        protected EventHandler(IEventHandlerServices eventHandlerServices)
+        {
+            _eventHandlerServices = eventHandlerServices;
         }
     }
 }
