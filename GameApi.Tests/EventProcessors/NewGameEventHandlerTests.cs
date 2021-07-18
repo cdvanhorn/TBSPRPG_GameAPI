@@ -77,12 +77,13 @@ namespace GameApi.Tests.EventProcessors
             
             var aggregateService = new Mock<IAggregateService>();
             aggregateService.Setup(service => 
-                service.AppendToAggregate(It.IsAny<string>(), It.IsAny<Event>(), It.IsAny<bool>())
-            ).Callback<string, Event, bool>((type, evnt, n) => events.Add(evnt));
+                service.AppendToAggregate(It.IsAny<string>(), It.IsAny<Event>(), It.IsAny<ulong>())
+            ).Callback<string, Event, ulong>((type, evnt, n) => events.Add(evnt));
+            var aggregateServiceObject = aggregateService.Object;
 
             var gameLogic = new GameLogic(
                 new EventAdapter(),
-                aggregateService.Object,
+                aggregateServiceObject,
                 gameService,
                 adventureService);
 
@@ -90,7 +91,9 @@ namespace GameApi.Tests.EventProcessors
                 adventureService,
                 contentService,
                 gameLogic,
-                gameService
+                gameService,
+                new EventAdapter(),
+                aggregateServiceObject
             );
 
             return new NewGameEventHandler(eventHandlerServices);
@@ -144,10 +147,9 @@ namespace GameApi.Tests.EventProcessors
             Assert.Equal(2, games.Count());
             Assert.NotNull(games.FirstOrDefault(g => g.Id == _testGameId));
             Assert.NotNull(games.FirstOrDefault(g => g.Id == gameId));
-            //there should be content
-            Assert.Equal(2, context.Contents.Count());
-            Assert.Equal(adventureIsc.SourceKey, 
-                context.Contents.FirstOrDefault( c => c.Position == 1).SourceKey);
+            //there should be an event
+            Assert.Single(events);
+            Assert.IsType<GameAddSourceKeyEvent>(events[0]);
         }
 
         [Fact]
@@ -188,7 +190,7 @@ namespace GameApi.Tests.EventProcessors
             Assert.Equal(1, games.Count());
             Assert.NotNull(games.FirstOrDefault(g => g.Id == _testGameId));
             //make sure still only one content object
-            Assert.Single(context.Contents);
+            Assert.Single(events);
         }
         #endregion
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using TbspRpgLib.Aggregates;
@@ -23,15 +24,18 @@ namespace GameApi.EventProcessors {
 
             //update the game
             await _eventHandlerServices.GameLogic.AddGame(game);
-            
-            //add content
-            var content = new Content()
+
+            //create a SourceKey event so content gets added
+            var contentEvent = _eventHandlerServices.EventAdapter.GameAddSourceKeyEvent(new Content()
             {
                 GameId = game.Id,
-                Position = evnt.StreamPosition,
-                SourceKey = await _eventHandlerServices.AdventureService.GetSourceKeyForAdventure(game.AdventureId, game.UserId)
-            };
-            await _eventHandlerServices.ContentService.AddContent(content);
+                SourceKey = await _eventHandlerServices.AdventureService.GetSourceKeyForAdventure(
+                    game.AdventureId, game.UserId)
+            });
+            await _eventHandlerServices.AggregateService.AppendToAggregate(
+                AggregateService.GAME_AGGREGATE_TYPE,
+                contentEvent,
+                gameAggregate.StreamPosition);
         }
     }
 }

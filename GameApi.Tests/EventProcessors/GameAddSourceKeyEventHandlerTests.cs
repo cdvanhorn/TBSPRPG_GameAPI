@@ -55,7 +55,9 @@ namespace GameApi.Tests.EventProcessors
                 adventureService,
                 contentService,
                 gameLogic,
-                gameService
+                gameService,
+                new EventAdapter(),
+                aggregateService.Object
             );
             return new GameAddSourceKeyEventHandler(eventHandlerServices);
         }

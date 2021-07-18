@@ -6,6 +6,7 @@ using GameApi.Entities;
 namespace GameApi.Adapters {
     public interface IEventAdapter {
         Event NewGameEvent(Game game);
+        Event GameAddSourceKeyEvent(Content content);
     }
 
     public class EventAdapter : IEventAdapter{
@@ -18,6 +19,15 @@ namespace GameApi.Adapters {
 
             GameNewEvent evt = new GameNewEvent(data);
             return evt;
+        }
+
+        public Event GameAddSourceKeyEvent(Content content)
+        {
+            var gameAddSourceKey = new GameAddSourceKey();
+            gameAddSourceKey.Id = content.GameId.ToString();
+            gameAddSourceKey.SourceKey = content.SourceKey;
+            var evnt = new GameAddSourceKeyEvent(gameAddSourceKey);
+            return evnt;
         }
     }
 }

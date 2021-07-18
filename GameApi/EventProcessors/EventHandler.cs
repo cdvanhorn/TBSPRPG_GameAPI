@@ -12,6 +12,8 @@ namespace GameApi.EventProcessors {
         IGameAggregateAdapter GameAggregateAdapter { get; }
         IGameLogic GameLogic { get; }
         IGameService GameService { get; }
+        IEventAdapter EventAdapter { get; }
+        IAggregateService AggregateService { get; }
     }
 
     public class EventHandlerServices : IEventHandlerServices
@@ -19,13 +21,17 @@ namespace GameApi.EventProcessors {
         public EventHandlerServices(IAdventureService adventureService,
             IContentService contentService,
             IGameLogic gameLogic,
-            IGameService gameService)
+            IGameService gameService,
+            IEventAdapter eventAdapter,
+            IAggregateService aggregateService)
         {
             GameAggregateAdapter = new GameAggregateAdapter();
             AdventureService = adventureService;
             ContentService = contentService;
             GameLogic = gameLogic;
             GameService = gameService;
+            EventAdapter = eventAdapter;
+            AggregateService = aggregateService;
         }
 
         public IAdventureService AdventureService { get; }
@@ -33,6 +39,8 @@ namespace GameApi.EventProcessors {
         public IGameAggregateAdapter GameAggregateAdapter { get; }
         public IGameLogic GameLogic { get; }
         public IGameService GameService { get; }
+        public IEventAdapter EventAdapter { get; }
+        public IAggregateService AggregateService { get; }
     }
     
     public interface IEventHandler {
