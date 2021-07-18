@@ -62,5 +62,24 @@ namespace GameApi.Tests.EventProcessors
             return new GameAddSourceKeyEventHandler(eventHandlerServices);
         }
         #endregion
+
+        #region HandleEvent
+
+        public async void HandleEvent_GameNotThere_ExceptionThrown()
+        {
+            
+        }
+
+        public async void HandleEvent_ContentExists_ContentNotAdded()
+        {
+            
+        }
+
+        public async void HandleEvent_Valid_ContentAdded()
+        {
+            
+        }
+
+        #endregion
     }
 }
