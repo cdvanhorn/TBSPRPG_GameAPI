@@ -86,7 +86,14 @@ namespace GameApi.Tests.EventProcessors
                 gameService,
                 adventureService);
 
-            return new NewGameEventHandler(gameLogic, contentService, adventureService);
+            var eventHandlerServices = new EventHandlerServices(
+                adventureService,
+                contentService,
+                gameLogic,
+                gameService
+            );
+
+            return new NewGameEventHandler(eventHandlerServices);
         }
         #endregion
         
